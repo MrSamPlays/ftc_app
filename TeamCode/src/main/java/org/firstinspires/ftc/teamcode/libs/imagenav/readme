@@ -2,7 +2,7 @@ Images are 36px*36px
 Each pixel represents 4 inches
 
 The image is oriented such that the Red Alliance is in the top right corner, and the Blue Alliance
-in the bottom left (seen sides.png).
+in the bottom left (see sides.png).
 
 Each image type has a specific documentation:
     Sides: The sides.png image tells the robot which alliance is which. The blue color represents
@@ -16,4 +16,4 @@ Each image type has a specific documentation:
        Blue is the background and red is the corner vortex.
 
     Center Vortex: The center_vortex.png file tells the robot where the center vortex is. Blue is
-       the background and read is the center vortex.
+       the background and red is the center vortex.
