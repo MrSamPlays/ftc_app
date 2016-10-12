@@ -11,7 +11,7 @@ Redistributions of source code must retain the above copyright notice, this list
 of conditions and the following disclaimer.
 
 Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
+list of conditions ans in bnd the following disclaimer in the documentation and/or
 other materials provided with the distribution.
 
 Neither the name of Robert Atkinson nor the names of his contributors may be used to
@@ -30,17 +30,21 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.robotcontroller.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+
+import com.qualcomm.ftcrobotcontroller.R;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Template: Linear OpMode", group = "Linear Opmode")
-// @Autonomous(...) is the other common choice
-@Disabled
-public class TestOp extends LinearOpMode {
+import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
+
+@Autonomous(name = "Template: Linear OpMode", group = "Linear Opmode")
+public class AutoOp extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -51,6 +55,8 @@ public class TestOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        Resources resources = GetResourcesMiddleman.getResources();
 
         /* eg: Initialize the hardware variables. Note that the strings used here as parameters
          * to 'get' must correspond to the names assigned during the robot configuration
@@ -65,6 +71,8 @@ public class TestOp extends LinearOpMode {
         // rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
         // Wait for the game to start (driver presses PLAY)
+        Bitmap image = ImageReader.loadImage(R.drawable.beacons, 36, 36);
+
         waitForStart();
         runtime.reset();
 
