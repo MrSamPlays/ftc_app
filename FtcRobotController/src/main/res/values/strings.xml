@@ -38,25 +38,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <resources>
 
-  <string name="app_name">FTC Robot Controller</string>
+  <string name="app_name">11389 App of Technical Difficulties</string>
 
   <!-- Menu -->
   <string name="inspection_mode_menu_item">Self Inspect</string>
-  <string name="programming_mode_menu_item">Programming Mode</string>
-  <string name="blocks_menu_item">Blocks</string>
-  <string name="settings_menu_item">Settings</string>
-  <string name="restart_robot_menu_item">Restart Robot</string>
-  <string name="configure_robot_menu_item">Configure Robot</string>
+  <string name="programming_mode_menu_item">Scratch, but Worse</string>
+  <string name="blocks_menu_item">Scratch Ripoff</string>
+  <string name="settings_menu_item">Things to Change (Usually the problem/solution)</string>
+  <string name="restart_robot_menu_item">Revive Robot (3 Lives Left)</string>
+  <string name="configure_robot_menu_item">Configure Robot (Sometimes the problem/solution)</string>
   <string name="about_menu_item">About</string>
-  <string name="exit_menu_item">Exit</string>
+  <string name="exit_menu_item">Leave (Don\'t)</string>
 
   <!-- Preferences -->
   <string name="pref_view_logs">View Logs</string>
   <string name="pref_sound_on_off_title">Sound</string>
 
-  <!-- Toast messages -->  
-  <string name="toastWifiConfigurationComplete">Configuration Complete</string>
-  <string name="toastRestartingRobot">Restarting Robot</string>
-  <string name="toastConfigureRobotBeforeProgrammingMode">You must Configure Robot before starting Programming Mode.</string>
+  <!-- Toast messages -->
+  <string name="toastWifiConfigurationComplete">Congrats, the configuration is complete!</string>
+  <string name="toastRestartingRobot">Reviving Robot (2 lives left)</string>
+  <string name="toastConfigureRobotBeforeProgrammingMode">You must Configure Robot before starting Scratch, but Worse.</string>
 
 </resources>
