@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     android:id="@+id/top_bar"
     android:layout_width="fill_parent"
     android:layout_height="80dp"
-    android:background="@color/black">
+      android:background="@color/main_foreground">
 
     <ImageView
       android:id="@+id/robotIcon"
@@ -71,7 +71,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:src="@drawable/icon_menu"
-      android:background="@color/black"
+        android:background="@color/main_foreground"
       android:padding="15dp"
       android:adjustViewBounds="true"
       android:layout_alignParentEnd="true"
@@ -83,7 +83,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <!-- end of black bar -->
 
   <include layout="@layout/header"
-           android:id="@+id/included_header"/>
+      android:id="@+id/included_header"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
 
   <RelativeLayout
     android:id="@+id/RelativeLayout"
@@ -128,8 +130,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           android:id="@+id/cameraMonitorViewId"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:orientation="vertical"
-          />
+          android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textRemoteProgrammingMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ff0066B3"
+            android:gravity="center"
+            android:textColor="#ffffffff"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:text="" />
+      </LinearLayout>
 
       <!-- When visible, the error message will overlay and thus partially
            obscure part of the camera monitor. We make this trade off so as to
@@ -160,18 +174,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true"
-      android:visibility="invisible"
-      android:text="" />
-
-    <TextView
-      android:id="@+id/textRemoteProgrammingMode"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="#ff0066B3"
-      android:gravity="center"
-      android:textColor="#ffffffff"
-      android:textSize="40sp"
-      android:textStyle="bold"
       android:visibility="invisible"
       android:text="" />
 
