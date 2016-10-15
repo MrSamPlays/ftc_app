@@ -49,6 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <string name="configure_robot_menu_item">Configure Robot (Sometimes the problem/solution)</string>
   <string name="about_menu_item">About</string>
   <string name="exit_menu_item">Leave (Don\'t)</string>
+  <string name="motd_menu_item">MOTD</string>
 
   <!-- Preferences -->
   <string name="pref_view_logs">View Logs</string>
