@@ -43,11 +43,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
 
-@Autonomous(name = "Template: Linear OpMode", group = "Linear Opmode")
-public class AutoOp extends LinearOpMode {
+@Autonomous(name = "Blue Automaticness", group = "Automatic")
+public class AutoOpBlue extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
+
+    private Bitmap sides = null;
+    private Bitmap beacons = null;
+    private Bitmap centerVortex = null;
+    private Bitmap cornerVortex = null;
+
     // DcMotor leftMotor = null;
     // DcMotor rightMotor = null;
 
@@ -57,6 +63,12 @@ public class AutoOp extends LinearOpMode {
         telemetry.update();
 
         Resources resources = GetResourcesMiddleman.getResources();
+        ImageReader.addResources(resources);
+
+        sides = ImageReader.loadImage(R.drawable.sides, 36, 36);
+        beacons = ImageReader.loadImage(R.drawable.beacons, 36, 36);
+        centerVortex = ImageReader.loadImage(R.drawable.center_vortex, 36, 36);
+        cornerVortex = ImageReader.loadImage(R.drawable.corner_vortex, 36, 36);
 
         /* eg: Initialize the hardware variables. Note that the strings used here as parameters
          * to 'get' must correspond to the names assigned during the robot configuration
@@ -70,8 +82,7 @@ public class AutoOp extends LinearOpMode {
         // leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         // rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
-        // Wait for the game to start (driver presses PLAY)
-        Bitmap image = ImageReader.loadImage(R.drawable.beacons, 36, 36);
+        // Wait for the game to start (driver presses PLAY)\
 
         waitForStart();
         runtime.reset();
