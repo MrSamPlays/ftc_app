@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class TeleOp extends LinearOpMode {
     DcMotor L;
     DcMotor R;
-    class Shutdown implements Runnable {
+    /*class Shutdown implements Runnable {
         private long starttime = System.currentTimeMillis();
         private int time;
         Shutdown(int s) {
@@ -35,7 +35,7 @@ public class TeleOp extends LinearOpMode {
             }
             stop();
         }
-    }
+    }*/
     private void InitializeRobot() {
         L = hardwareMap.dcMotor.get("L");
         L.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -46,9 +46,9 @@ public class TeleOp extends LinearOpMode {
         InitializeRobot();
         waitForStart();
         // runs for 10 seconds
-        Shutdown s = new Shutdown(30000);
-        Thread t = new Thread(s);
-        t.start();
+        // Shutdown s = new Shutdown(30000);
+        // Thread t = new Thread(s);
+        // t.start();
         while (opModeIsActive()) {
             L.setMaxSpeed(2048);
             R.setMaxSpeed(2048);
