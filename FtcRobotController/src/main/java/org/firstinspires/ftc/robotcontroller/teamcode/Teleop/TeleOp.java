@@ -2,6 +2,7 @@ package org.firstinspires.ftc.robotcontroller.teamcode.Teleop;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -15,6 +16,21 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class TeleOp extends LinearOpMode {
     DcMotor L;
     DcMotor R;
+    class Shutdown implements Runnable {
+        private long starttime = System.currentTimeMillis();
+        private int time;
+        Shutdown(int s) {
+            this.time = s / 1000;
+        }
+        @Override
+        public void run() {
+
+            while (System.currentTimeMillis() - starttime < time) {
+                telemetry.addData("what", System.currentTimeMillis() - starttime);
+            }
+            stop();
+        }
+    }
     private void InitializeRobot() {
         L = hardwareMap.dcMotor.get("L");
         L.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -24,6 +40,10 @@ public class TeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         InitializeRobot();
         waitForStart();
+        // runs for 10 seconds
+        Shutdown s = new Shutdown(10000);
+        Thread t = new Thread(s);
+        t.start();
         while (opModeIsActive()) {
             L.setMaxSpeed(2048);
             R.setMaxSpeed(2048);
