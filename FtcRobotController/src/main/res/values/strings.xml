@@ -38,29 +38,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <resources>
 
-  <string name="app_name">11389 App of Technical Difficulties</string>
+    <string name="app_name">11389 App of Technical Difficulties</string>
 
-  <!-- Menu -->
-  <string name="inspection_mode_menu_item">Self Inspect</string>
-  <string name="programming_mode_menu_item">Scratch, but Worse</string>
-  <string name="blocks_menu_item">Scratch Ripoff</string>
-  <string name="settings_menu_item">Things to Change (Usually the problem/solution)</string>
-  <string name="restart_robot_menu_item">Revive Robot (3 Lives Left)</string>
-  <string name="configure_robot_menu_item">Configure Robot (Sometimes the problem/solution)</string>
-  <string name="about_menu_item">About</string>
-  <string name="exit_menu_item">Leave (Don\'t)</string>
-  <string name="motd_menu_item">MOTD</string>
+    <!-- Menu -->
+    <string name="inspection_mode_menu_item">Self Inspect</string>
+    <string name="programming_mode_menu_item">Scratch, but Worse</string>
+    <string name="blocks_menu_item">Scratch Ripoff</string>
+    <string name="settings_menu_item">Things to Change (Usually the problem/solution)</string>
+    <string name="restart_robot_menu_item">Revive Robot (3 Lives Left)</string>
+    <string name="configure_robot_menu_item">Configure Robot (Sometimes the problem/solution)</string>
+    <string name="about_menu_item">About</string>
+    <string name="exit_menu_item">Leave (Don\'t)</string>
+    <string name="motd_menu_item">MOTD</string>
 
-  <!-- Preferences -->
-  <string name="pref_view_logs">View Logs</string>
-  <string name="pref_sound_on_off_title">Sound</string>
+    <!-- Preferences -->
+    <string name="pref_view_logs">View Logs</string>
+    <string name="pref_sound_on_off_title">Sound</string>
 
-  <!-- Toast messages -->
-  <string name="toastWifiConfigurationComplete">Congrats, the configuration is complete!</string>
-  <string name="toastRestartingRobot">Reviving Robot (2 lives left)</string>
-  <string name="toastConfigureRobotBeforeProgrammingMode">You must Configure Robot before starting Scratch, but Worse.</string>
-
-  <!-- ??? -->
-  <string name="activeConfigCaption">I am an active config caption! :)</string>
+    <!-- Toast messages -->
+    <string name="toastWifiConfigurationComplete">Congrats, the configuration is complete!</string>
+    <string name="toastRestartingRobot">Reviving Robot (2 lives left)</string>
+    <string name="toastConfigureRobotBeforeProgrammingMode">You must Configure Robot before starting Scratch, but Worse.</string>
+    <string name="toastMOTD">Message of the day:</string>
+    <string name="toastMessage">Whatever I did wrong, I had no idea that I did it</string>
+    <!-- ??? -->
+    <string name="activeConfigCaption">I am an active config caption! :)</string>
 
 </resources>

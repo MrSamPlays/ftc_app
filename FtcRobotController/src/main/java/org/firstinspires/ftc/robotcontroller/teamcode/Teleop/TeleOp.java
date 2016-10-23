@@ -24,9 +24,14 @@ public class TeleOp extends LinearOpMode {
         }
         @Override
         public void run() {
-
+            starttime = System.currentTimeMillis();
             while (System.currentTimeMillis() - starttime < time) {
                 telemetry.addData("what", System.currentTimeMillis() - starttime);
+                try {
+                    Thread.sleep(10);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
             }
             stop();
         }
@@ -41,7 +46,7 @@ public class TeleOp extends LinearOpMode {
         InitializeRobot();
         waitForStart();
         // runs for 10 seconds
-        Shutdown s = new Shutdown(10000);
+        Shutdown s = new Shutdown(30000);
         Thread t = new Thread(s);
         t.start();
         while (opModeIsActive()) {
