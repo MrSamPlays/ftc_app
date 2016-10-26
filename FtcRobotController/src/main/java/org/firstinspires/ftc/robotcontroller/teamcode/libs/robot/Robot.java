@@ -8,4 +8,24 @@ public class Robot {
     public static void setX(float newX) {
         x = newX;
     }
+
+    public static float getX() {
+        return x;
+    }
+
+    public static void setY(float newY) {
+        y = newY;
+    }
+
+    public static float getY() {
+        return y;
+    }
+
+    public static void setAlliance(boolean isRed) {
+        redAlliance = isRed;
+    }
+
+    public static boolean isRedAlliance() {
+        return redAlliance;
+    }
 }

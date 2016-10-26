@@ -42,6 +42,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 
 @Autonomous(name = "Blue Automaticness", group = "Automatic")
 public class AutoOpBlue extends LinearOpMode {
@@ -61,6 +62,8 @@ public class AutoOpBlue extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        Robot.setAlliance(false);
 
         Resources resources = GetResourcesMiddleman.getResources();
         ImageReader.addResources(resources);
