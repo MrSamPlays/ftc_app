@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends LinearOpMode {
+    boolean LedEnabled = false;
     DcMotor L;
     DcMotor R;
     /*class Shutdown implements Runnable {
@@ -54,6 +55,13 @@ public class TeleOp extends LinearOpMode {
             R.setMaxSpeed(2048);
             L.setPower(gamepad1.left_stick_y);
             R.setPower(gamepad1.right_stick_y);
+            if (gamepad1.dpad_left) {
+                toggleLED();
+            }
         }
+    }
+    private void toggleLED() {
+        LedEnabled = !LedEnabled;
+
     }
 }
