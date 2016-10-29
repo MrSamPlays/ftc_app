@@ -43,8 +43,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.sensors.ColorSensor;
 
-@Autonomous(name = "Blue Automaticness", group = "Automatic")
+@Autonomous(name = "Blue Alliance", group = "Automatic")
 public class AutoOpBlue extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -55,6 +56,8 @@ public class AutoOpBlue extends LinearOpMode {
     private Bitmap centerVortex = null;
     private Bitmap cornerVortex = null;
 
+    private ColorSensor color;
+
     // DcMotor leftMotor = null;
     // DcMotor rightMotor = null;
 
@@ -64,6 +67,7 @@ public class AutoOpBlue extends LinearOpMode {
         telemetry.update();
 
         Robot.setAlliance(false);
+        color = new ColorSensor("ColorSensor", hardwareMap);
 
         Resources resources = GetResourcesMiddleman.getResources();
         ImageReader.addResources(resources);
@@ -92,7 +96,7 @@ public class AutoOpBlue extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Color", "RGB " + color.getColor()[0] + ", " + color.getColor()[1] + ", " + color.getColor()[2]);
             telemetry.update();
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)

@@ -4,6 +4,12 @@ import android.graphics.Color;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+/**
+ * This class is a wrapper for the ColorSensor class (check your imports!) and handles a lot of the
+ * dirty work for you. It contains many methods, so check each ont to make sure that it's right.
+ *
+ * @author medude
+ */
 public class ColorSensor {
     /*--------------------------------------------------------------/
     /  INPUT VARIABLES- deal with how the color sensor reads input  /
@@ -21,29 +27,65 @@ public class ColorSensor {
     // The alternative is HSV
     private boolean rgb;
 
-    private boolean lightOn = false;
+    // This keeps track of if the LED light is on or not.
+    private boolean lightOn = true;
 
     /*----------------------------------------------------------------/
     /  CONSTRUCTION- all constructors and constructor helper methods  /
     /----------------------------------------------------------------*/
-    public void fullConstructor(String name, HardwareMap hardwareMap, boolean rgb) {
+
+    /**
+     * This method is called by all constructors to the same work for all of them- instead of
+     * editing the constructors, edit here.
+     *
+     * @param name        This is the name given to the color sensor from the setup.
+     * @param hardwareMap This is a refrence to the hardware map.
+     * @param rgb         This is if you want the output mode to be in RGB or HSV.
+     */
+    private void fullConstructor(String name, HardwareMap hardwareMap, boolean rgb) {
         this.hardwareMap = hardwareMap;
         this.colorSensor = hardwareMap.colorSensor.get(name);
         this.rgb = rgb;
+
+        turnOffLight();
     }
 
+    /**
+     * This is a constructor- don't edit it, just fullConstructor.
+     *
+     * @param name        This is the name given to the color sensor from the setup.
+     * @param hardwareMap This is a refrence to the hardware map.
+     * @param rgb         This is if you want the output mode to be in RGB or HSV.
+     */
     public ColorSensor(String name, HardwareMap hardwareMap, boolean rgb) {
         fullConstructor(name, hardwareMap, rgb);
     }
 
+    /**
+     * This is a constructor- don't edit it, just fullConstructor.
+     *
+     * @param name This is the name given to the color sensor from the setup.
+     * @param hardwareMap This is a refrence to the hardware map.
+     */
     public ColorSensor(String name, HardwareMap hardwareMap) {
         fullConstructor(name, hardwareMap, true);
     }
 
+    /**
+     * This is a constructor- don't edit it, just fullConstructor.
+     *
+     * @param hardwareMap This is a refrence to the hardware map.
+     * @param rgb This is if you want the output mode to be in RGB or HSV.
+     */
     public ColorSensor(HardwareMap hardwareMap, boolean rgb) {
         fullConstructor("colorSensor", hardwareMap, rgb);
     }
 
+    /**
+     * This is a constructor- don't edit it, just fullConstructor.
+     *
+     * @param hardwareMap This is a refrence to the hardware map.
+     */
     public ColorSensor(HardwareMap hardwareMap) {
         fullConstructor("colorSensor", hardwareMap, true);
     }
@@ -51,9 +93,9 @@ public class ColorSensor {
     /*------------------------------------------------------------------------------/
     /  RGB/HSV- deals with changing and receiving info about the RGB or HSV status  /
     /------------------------------------------------------------------------------*/
-    public void setRgb() {
-        rgb = true;
-    }
+        public void setRgb() {
+            rgb = true;
+        }
 
     public void setRgb(boolean rgb) {
         this.rgb = rgb;
@@ -78,21 +120,21 @@ public class ColorSensor {
     /*-----------------------------------------------------/
     /  I/O- deals with getting input and providing output  /
     /-----------------------------------------------------*/
-    public float[] getColor() {
-        float[] results = new float[3];
+        public float[] getColor() {
+            float[] results = new float[3];
 
-        if (rgb) {
-            results[0] = colorSensor.red();
-            results[1] = colorSensor.green();
-            results[2] = colorSensor.blue();
+            if (rgb) {
+                results[0] = colorSensor.red();
+                results[1] = colorSensor.green();
+                results[2] = colorSensor.blue();
 
-            return results;
-        } else {
-            Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, results);
+                return results;
+            } else {
+                Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, results);
 
-            return results;
+                return results;
+            }
         }
-    }
 
     public float getValue() {
         return getValue(ColorChannel.ALPHA, true);
@@ -146,5 +188,5 @@ public class ColorSensor {
 
     public boolean isLightOn() {
         return lightOn;
-    }
+        }
 }
