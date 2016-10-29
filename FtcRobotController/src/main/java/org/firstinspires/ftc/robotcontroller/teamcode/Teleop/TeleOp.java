@@ -59,13 +59,14 @@ public class TeleOp extends LinearOpMode {
         while (gyro.isCalibrating()) {
             // wait until gyro is finished calibrating
             updateTelemetry(telemetry);
+            telemetry.update();
         }
         while (opModeIsActive()) {
             L.setMaxSpeed(2048);
             R.setMaxSpeed(2048);
             L.setPower(gamepad1.left_stick_y);
             R.setPower(gamepad1.right_stick_y);
-            updateTelemetry(telemetry);
+            telemetry.update();
         }
     }
 }
