@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class TeleOp extends LinearOpMode {
     DcMotor L;
     DcMotor R;
+    GyroSensor gyro;
     /*class Shutdown implements Runnable {
         private long starttime = System.currentTimeMillis();
         private int time;
@@ -40,6 +42,8 @@ public class TeleOp extends LinearOpMode {
         L = hardwareMap.dcMotor.get("L");
         L.setDirection(DcMotorSimple.Direction.REVERSE);
         R = hardwareMap.dcMotor.get("R");
+        gyro = hardwareMap.gyroSensor.get("gyro");
+        gyro.calibrate();
     }
     @Override
     public void runOpMode() throws InterruptedException {
@@ -49,11 +53,19 @@ public class TeleOp extends LinearOpMode {
         // Shutdown s = new Shutdown(30000);
         // Thread t = new Thread(s);
         // t.start();
+        telemetry.addData("Gyro Heading", gyro.getHeading());
+        telemetry.addData("Gyro Z Angle", gyro.rawZ());
+        telemetry.addData("Gyro status", gyro.status());
+        while (gyro.isCalibrating()) {
+            // wait until gyro is finished calibrating
+            updateTelemetry(telemetry);
+        }
         while (opModeIsActive()) {
             L.setMaxSpeed(2048);
             R.setMaxSpeed(2048);
             L.setPower(gamepad1.left_stick_y);
             R.setPower(gamepad1.right_stick_y);
+            updateTelemetry(telemetry);
         }
     }
 }
