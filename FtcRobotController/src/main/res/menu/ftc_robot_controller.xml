@@ -61,6 +61,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:showAsAction="never"
       android:title="@string/motd_menu_item"/>
   <item
+    android:id="@+id/action_sss"
+      android:orderInCategory="102"
+      android:showAsAction="never"
+      android:title="@string/sss_menu_item"/>
+  <item
     android:id="@+id/action_programming_mode"
     android:orderInCategory="103"
     android:showAsAction="never"

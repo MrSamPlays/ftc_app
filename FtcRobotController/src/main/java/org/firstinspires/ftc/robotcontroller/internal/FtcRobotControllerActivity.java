@@ -281,8 +281,8 @@ public class FtcRobotControllerActivity extends Activity {
                 return false;
             }
         });
-        AppUtil.getInstance().showToast(context, "Message of the Day:");
-        AppUtil.getInstance().showToast(context, "This program is bound to fail.");
+        AppUtil.getInstance().showToast(context, context.getString(R.string.toastMOTD));
+        AppUtil.getInstance().showToast(context, context.getString(R.string.toastMessage));
     }
 
     @Override
@@ -428,13 +428,16 @@ public class FtcRobotControllerActivity extends Activity {
             startActivity(intent);
             return true;
         } else if (id == R.id.action_motd) {
-            AppUtil.getInstance().showToast(context, "Message of the day: ");
+            AppUtil.getInstance().showToast(context, context.getString(R.string.toastMOTD));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            AppUtil.getInstance().showToast(context, "This program is bound to fail");
+            AppUtil.getInstance().showToast(context, context.getString(R.string.toastMessage));
+        }else if (id == R.id.action_sss) {
+            Intent options = new Intent(this, OptionsActivity.class);
+            startActivity(options);
         } else if (id == R.id.action_exit_app) {
             finish();
             return true;

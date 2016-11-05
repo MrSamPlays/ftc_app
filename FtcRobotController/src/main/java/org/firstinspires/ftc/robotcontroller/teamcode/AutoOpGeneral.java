@@ -40,11 +40,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
 
-@Autonomous(name = "Blue Automaticness", group = "Automatic")
-public class AutoOpBlue extends LinearOpMode {
+@Autonomous(name = "General Automaticness", group = "Automatic")
+public class AutoOpGeneral extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -82,14 +83,16 @@ public class AutoOpBlue extends LinearOpMode {
         // leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         // rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
-        // Wait for the game to start (driver presses PLAY)\
+        // Wait for the game to start (driver presses PLAY)
 
         waitForStart();
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            boolean isRed = GetAllianceMiddleman.isRed();
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Is Red", "Color: " + isRed);
             telemetry.update();
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
