@@ -436,8 +436,8 @@ public class FtcRobotControllerActivity extends Activity {
             }
             AppUtil.getInstance().showToast(context, context.getString(R.string.toastMessage));
         }else if (id == R.id.action_sss) {
-            Intent jokesintent = new Intent(FTCJokesActivity.launchIntent);
-            startActivity(jokesintent);
+            Intent options = new Intent(this, OptionsActivity.class);
+            startActivity(options);
         } else if (id == R.id.action_exit_app) {
             finish();
             return true;

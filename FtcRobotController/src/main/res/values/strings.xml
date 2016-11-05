@@ -50,7 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="about_menu_item">About</string>
     <string name="exit_menu_item">Leave (Don\'t)</string>
     <string name="motd_menu_item">MOTD</string>
-    <string name="sss_menu_item">Super Secret Settings</string>
+    <string name="sss_menu_item">Super Secret Settings (shhhh...)</string>
 
     <!-- Preferences -->
     <string name="pref_view_logs">View Logs</string>
@@ -64,5 +64,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="toastMessage">Whatever I did wrong, I had no idea that I did it</string>
     <!-- ??? -->
     <string name="activeConfigCaption">I am an active config caption! :)</string>
+
+    <!-- Options -->
+    <string name="alliance">Current Alliance:</string>
+    <string name="blueAlliance">Blue</string>
+    <string name="redAlliance">Red</string>
+    <string name="submit">Submit</string>
 
 </resources>
