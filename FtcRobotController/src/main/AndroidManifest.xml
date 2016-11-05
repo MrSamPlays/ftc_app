@@ -29,6 +29,10 @@
         android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
         android:resource="@xml/device_filter" />
     </activity>
+    <activity android:name="org.firstinspires.ftc.robotcontroller.internal.FTCJokesActivity"
+      android:configChanges="orientation|screenSize"
+        android:launchMode="singleTask">
+    </activity>
 
     <activity
         android:name="org.firstinspires.ftc.robotcontroller.internal.OptionsActivity"
