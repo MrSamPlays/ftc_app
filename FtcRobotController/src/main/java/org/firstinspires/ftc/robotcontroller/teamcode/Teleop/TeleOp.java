@@ -69,7 +69,13 @@ public class TeleOp extends LinearOpMode {
             R.setMaxSpeed(2048);
             L.setPower(gamepad1.left_stick_y);
             R.setPower(gamepad1.right_stick_y);
-            telemetry.update();
+            if (gamepad1.dpad_left) {
+                toggleLED();
+            }
         }
+    }
+    private void toggleLED() {
+        LedEnabled = !LedEnabled;
+
     }
 }

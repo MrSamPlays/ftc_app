@@ -38,15 +38,16 @@ import android.graphics.Bitmap;
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
-import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
-import org.firstinspires.ftc.robotcontroller.teamcode.libs.sensors.ColorSensor;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.NavLibs;
 
-@Autonomous(name = "Blue Alliance", group = "Automatic")
-public class AutoOpBlue extends LinearOpMode {
+@Autonomous(name = "General Automaticness", group = "Automatic")
+public class AutoOpGeneral extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -56,18 +57,15 @@ public class AutoOpBlue extends LinearOpMode {
     private Bitmap centerVortex = null;
     private Bitmap cornerVortex = null;
 
-    private ColorSensor color;
+    private DcMotor leftMotor = null;
+    private DcMotor rightMotor = null;
 
-    // DcMotor leftMotor = null;
-    // DcMotor rightMotor = null;
+    private NavLibs navigator = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
-        Robot.setAlliance(false);
-        color = new ColorSensor("ColorSensor", hardwareMap);
 
         Resources resources = GetResourcesMiddleman.getResources();
         ImageReader.addResources(resources);
@@ -81,22 +79,26 @@ public class AutoOpBlue extends LinearOpMode {
          * to 'get' must correspond to the names assigned during the robot configuration
          * step (using the FTC Robot Controller app on the phone).
          */
-        // leftMotor  = hardwareMap.dcMotor.get("left motor");
-        // rightMotor = hardwareMap.dcMotor.get("right motor");
+        leftMotor = hardwareMap.dcMotor.get("Left");
+        rightMotor = hardwareMap.dcMotor.get("Right");
+
+        navigator = new NavLibs(leftMotor, rightMotor, sides, beacons, centerVortex, cornerVortex);
 
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
         // leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         // rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
-        // Wait for the game to start (driver presses PLAY)\
+        // Wait for the game to start (driver presses PLAY)
 
         waitForStart();
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            telemetry.addData("Color", "RGB " + color.getColor()[0] + ", " + color.getColor()[1] + ", " + color.getColor()[2]);
+            boolean isRed = GetAllianceMiddleman.isRed();
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Is Red", "Color: " + isRed);
             telemetry.update();
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
