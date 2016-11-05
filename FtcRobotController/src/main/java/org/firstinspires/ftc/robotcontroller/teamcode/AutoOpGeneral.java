@@ -38,11 +38,13 @@ import android.graphics.Bitmap;
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.NavLibs;
 
 @Autonomous(name = "General Automaticness", group = "Automatic")
 public class AutoOpGeneral extends LinearOpMode {
@@ -55,8 +57,10 @@ public class AutoOpGeneral extends LinearOpMode {
     private Bitmap centerVortex = null;
     private Bitmap cornerVortex = null;
 
-    // DcMotor leftMotor = null;
-    // DcMotor rightMotor = null;
+    private DcMotor leftMotor = null;
+    private DcMotor rightMotor = null;
+
+    private NavLibs navigator = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -75,8 +79,10 @@ public class AutoOpGeneral extends LinearOpMode {
          * to 'get' must correspond to the names assigned during the robot configuration
          * step (using the FTC Robot Controller app on the phone).
          */
-        // leftMotor  = hardwareMap.dcMotor.get("left motor");
-        // rightMotor = hardwareMap.dcMotor.get("right motor");
+        leftMotor = hardwareMap.dcMotor.get("Left");
+        rightMotor = hardwareMap.dcMotor.get("Right");
+
+        navigator = new NavLibs(leftMotor, rightMotor, sides, beacons, centerVortex, cornerVortex);
 
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
