@@ -55,7 +55,7 @@ public class TeleOp extends LinearOpMode {
             telemetry.addData("Gyro Heading", gyro.getHeading());
             telemetry.addData("Gyro Z Angle", gyro.rawZ());
             telemetry.addData("Gyro status", gyro.status());
-            generator.startTone(ToneGenerator.TONE_SUP_BUSY, 200);
+            generator.startTone(ToneGenerator.TONE_CDMA_NETWORK_BUSY, 200);
             System.out.println("Sounds");
         }
         generator.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 200);
