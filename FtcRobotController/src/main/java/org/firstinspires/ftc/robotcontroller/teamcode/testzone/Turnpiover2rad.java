@@ -33,9 +33,9 @@ public class Turnpiover2rad extends LinearOpMode{
     ToneGenerator generator;
     protected void InitializeRobot() {
         generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-        L = hardwareMap.dcMotor.get("L");
+        L = hardwareMap.dcMotor.get("Left");
         L.setDirection(DcMotorSimple.Direction.REVERSE);
-        R = hardwareMap.dcMotor.get("R");
+        R = hardwareMap.dcMotor.get("Right");
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
         telemetry.addData("Gyro Sensor Bearing", gyro.getHeading());
