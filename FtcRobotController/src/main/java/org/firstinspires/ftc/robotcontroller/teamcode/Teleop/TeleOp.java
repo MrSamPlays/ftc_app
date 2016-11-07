@@ -31,14 +31,14 @@ public class TeleOp extends LinearOpMode {
     DcMotor L;
     DcMotor R;
     GyroSensor gyro;
-    ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+    ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
     private void InitializeRobot() {
-        L = hardwareMap.dcMotor.get("L");
+        L = hardwareMap.dcMotor.get("Left");
         L.setDirection(DcMotorSimple.Direction.REVERSE);
-        R = hardwareMap.dcMotor.get("R");
+        R = hardwareMap.dcMotor.get("Right");
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
-        generator.startTone(ToneGenerator.TONE_SUP_BUSY, 200);
+        generator.startTone(ToneGenerator.TONE_SUP_CALL_WAITING, 200);
     }
     @Override
     public void runOpMode() throws InterruptedException {
@@ -55,9 +55,10 @@ public class TeleOp extends LinearOpMode {
             telemetry.addData("Gyro Heading", gyro.getHeading());
             telemetry.addData("Gyro Z Angle", gyro.rawZ());
             telemetry.addData("Gyro status", gyro.status());
-            generator.startTone(ToneGenerator.TONE_SUP_BUSY, 1000);
+            generator.startTone(ToneGenerator.TONE_SUP_BUSY, 200);
+            System.out.println("Sounds");
         }
-        generator.stopTone();
+        generator.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 200);
         while (opModeIsActive()) {
             L.setMaxSpeed(2048);
             R.setMaxSpeed(2048);
