@@ -211,6 +211,8 @@ public abstract class CustomLOpMode extends OpMode {
     /**
      * From the non-linear OpMode; do not override
      */
+    public void initializeRobot() {
+    }
     @Override
     final public void init() {
         this.executorService = ThreadPool.newSingleThreadExecutor();
