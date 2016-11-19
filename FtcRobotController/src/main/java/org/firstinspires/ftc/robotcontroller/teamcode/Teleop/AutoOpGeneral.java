@@ -45,8 +45,9 @@ import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.NavLibs;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.sensors.ColorSensor;
 
-@Autonomous(name = "General Automaticness", group = "Automatic")
+@Autonomous(name = "General Automaticness", group = "Nathan's Test Routines")
 public class AutoOpGeneral extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -59,6 +60,8 @@ public class AutoOpGeneral extends LinearOpMode {
 
     private DcMotor leftMotor = null;
     private DcMotor rightMotor = null;
+
+    private ColorSensor bottomSensor = null;
 
     private NavLibs navigator = null;
 
@@ -82,6 +85,8 @@ public class AutoOpGeneral extends LinearOpMode {
         leftMotor = hardwareMap.dcMotor.get("Left");
         rightMotor = hardwareMap.dcMotor.get("Right");
 
+        bottomSensor = new ColorSensor("ColorSensor", hardwareMap);
+
         navigator = new NavLibs(leftMotor, rightMotor, sides, beacons, centerVortex, cornerVortex);
 
         // eg: Set the drive motor directions:
@@ -98,7 +103,10 @@ public class AutoOpGeneral extends LinearOpMode {
         while (opModeIsActive()) {
             boolean isRed = GetAllianceMiddleman.isRed();
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Is Red", "Color: " + isRed);
+            telemetry.addData("Color R", bottomSensor.getColor()[0]);
+            telemetry.addData("Color G", bottomSensor.getColor()[1]);
+            telemetry.addData("Color B", bottomSensor.getColor()[2]);
+            telemetry.addData("Found line?", navigator.testColor(bottomSensor, new float[]{255, 0, 0}, 50));
             telemetry.update();
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)

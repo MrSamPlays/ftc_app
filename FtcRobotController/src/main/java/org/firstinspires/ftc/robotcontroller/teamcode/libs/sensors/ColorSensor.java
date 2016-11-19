@@ -54,7 +54,7 @@ public class ColorSensor {
      * This is a constructor- don't edit it, just fullConstructor.
      *
      * @param name        This is the name given to the color sensor from the setup.
-     * @param hardwareMap This is a refrence to the hardware map.
+     * @param hardwareMap This is a reference to the hardware map.
      * @param rgb         This is if you want the output mode to be in RGB or HSV.
      */
     public ColorSensor(String name, HardwareMap hardwareMap, boolean rgb) {
@@ -124,9 +124,9 @@ public class ColorSensor {
             float[] results = new float[3];
 
             if (rgb) {
-                results[0] = colorSensor.red();
-                results[1] = colorSensor.green();
-                results[2] = colorSensor.blue();
+                results[0] = convertRawToRgb(colorSensor.red());
+                results[1] = convertRawToRgb(colorSensor.green());
+                results[2] = convertRawToRgb(colorSensor.blue());
 
                 return results;
             } else {
@@ -147,9 +147,9 @@ public class ColorSensor {
     public float getValue(ColorChannel channel, boolean average) {
         if (average) {
             float averageValue = 0;
-            averageValue += colorSensor.red();
-            averageValue += colorSensor.green();
-            averageValue += colorSensor.blue();
+            averageValue += convertRawToRgb(colorSensor.red());
+            averageValue += convertRawToRgb(colorSensor.green());
+            averageValue += convertRawToRgb(colorSensor.blue());
             averageValue /= 3;
 
             return averageValue;
@@ -157,11 +157,11 @@ public class ColorSensor {
 
         switch (channel) {
             case RED:
-                return colorSensor.red();
+                return convertRawToRgb(colorSensor.red());
             case GREEN:
-                return colorSensor.green();
+                return convertRawToRgb(colorSensor.green());
             case BLUE:
-                return colorSensor.blue();
+                return convertRawToRgb(colorSensor.blue());
             default:
                 return 0;
         }
@@ -188,5 +188,9 @@ public class ColorSensor {
 
     public boolean isLightOn() {
         return lightOn;
-        }
+    }
+
+    private float convertRawToRgb(float raw) {
+        return (raw * 6.4f) - 1f;
+    }
 }
