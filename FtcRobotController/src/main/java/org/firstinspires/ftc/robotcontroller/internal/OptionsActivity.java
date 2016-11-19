@@ -17,6 +17,25 @@ public class OptionsActivity extends Activity {
     private RadioButton allianceChoice;
     private String alliance;
     private Button submit;
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // get selected radio button from radioGroup
+            int selectedId = allianceRadioGroup.getCheckedRadioButtonId();
+
+            // find the radiobutton by returned id
+            allianceChoice = (RadioButton) findViewById(selectedId);
+            alliance = allianceChoice.getText().toString();
+
+            if (alliance.equalsIgnoreCase("red")) {
+                GetAllianceMiddleman.setAlliance(true);
+                AppUtil.getInstance().showToast("Successfully set Alliance to red");
+            } else {
+                GetAllianceMiddleman.setAlliance(false);
+                AppUtil.getInstance().showToast("Successfully set Alliance to blue");
+            }
+        }
+    };
 
     @Override
     public Intent getIntent() {
@@ -47,23 +66,4 @@ public class OptionsActivity extends Activity {
 
         submit.setOnClickListener(onClickListener);
     }
-
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            // get selected radio button from radioGroup
-            int selectedId = allianceRadioGroup.getCheckedRadioButtonId();
-
-            // find the radiobutton by returned id
-            allianceChoice = (RadioButton) findViewById(selectedId);
-            alliance = allianceChoice.getText().toString();
-
-            if (alliance.equalsIgnoreCase("red")) {
-                GetAllianceMiddleman.setAlliance(true);
-            } else {
-                GetAllianceMiddleman.setAlliance(false);
-            }
-            AppUtil.getInstance().showToast("Successfully set Alliance");
-        }
-    };
 }
