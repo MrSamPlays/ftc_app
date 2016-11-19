@@ -1,10 +1,26 @@
 package org.firstinspires.ftc.robotcontroller.teamcode.Teleop;
 
 
+import android.app.Activity;
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.media.ToneGenerator;
+import android.media.session.MediaController;
+import android.net.Uri;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import java.io.File;
+import java.net.URI;
 
 /**
  * Created by sam on 15-Oct-16.
@@ -15,32 +31,14 @@ public class TeleOp extends LinearOpMode {
     DcMotor L;
     DcMotor R;
     GyroSensor gyro;
-    /*class Shutdown implements Runnable {
-        private long starttime = System.currentTimeMillis();
-        private int time;
-        Shutdown(int s) {
-            this.time = s / 1000;
-        }
-        @Override
-        public void run() {
-            starttime = System.currentTimeMillis();
-            while (System.currentTimeMillis() - starttime < time) {
-                telemetry.addData("what", System.currentTimeMillis() - starttime);
-                try {
-                    Thread.sleep(10);
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                }
-            }
-            stop();
-        }
-    }*/
+    ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
     private void InitializeRobot() {
-        L = hardwareMap.dcMotor.get("L");
+        L = hardwareMap.dcMotor.get("Left");
         L.setDirection(DcMotorSimple.Direction.REVERSE);
-        R = hardwareMap.dcMotor.get("R");
+        R = hardwareMap.dcMotor.get("Right");
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
+        generator.startTone(ToneGenerator.TONE_SUP_CALL_WAITING, 200);
     }
     @Override
     public void runOpMode() throws InterruptedException {
@@ -50,26 +48,25 @@ public class TeleOp extends LinearOpMode {
         // Shutdown s = new Shutdown(30000);
         // Thread t = new Thread(s);
         // t.start();
-        telemetry.addData("Gyro Heading", gyro.getHeading());
-        telemetry.addData("Gyro Z Angle", gyro.rawZ());
-        telemetry.addData("Gyro status", gyro.status());
+
         while (gyro.isCalibrating()) {
             // wait until gyro is finished calibrating
             updateTelemetry(telemetry);
-            telemetry.update();
+            telemetry.addData("Gyro Heading", gyro.getHeading());
+            telemetry.addData("Gyro Z Angle", gyro.rawZ());
+            telemetry.addData("Gyro status", gyro.status());
+            generator.startTone(ToneGenerator.TONE_CDMA_NETWORK_BUSY, 200);
+            System.out.println("Sounds");
         }
+        generator.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 200);
         while (opModeIsActive()) {
             L.setMaxSpeed(2048);
             R.setMaxSpeed(2048);
             L.setPower(gamepad1.left_stick_y);
             R.setPower(gamepad1.right_stick_y);
-            if (gamepad1.dpad_left) {
-                toggleLED();
-            }
+            telemetry.addData("Gyro Heading", gyro.getHeading());
+            telemetry.addData("Gyro Z Angle", gyro.rawZ());
+            telemetry.addData("Gyro status", gyro.status());
         }
-    }
-    private void toggleLED() {
-        //LedEnabled = !LedEnabled;
-
     }
 }
