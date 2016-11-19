@@ -10,6 +10,8 @@ import android.widget.RadioGroup;
 
 import com.qualcomm.ftcrobotcontroller.R;
 
+import org.firstinspires.ftc.robotcore.internal.AppUtil;
+
 public class OptionsActivity extends Activity {
     private RadioGroup allianceRadioGroup;
     private RadioButton allianceChoice;
@@ -61,6 +63,7 @@ public class OptionsActivity extends Activity {
             } else {
                 GetAllianceMiddleman.setAlliance(false);
             }
+            AppUtil.getInstance().showToast("Successfully set Alliance");
         }
     };
 }
