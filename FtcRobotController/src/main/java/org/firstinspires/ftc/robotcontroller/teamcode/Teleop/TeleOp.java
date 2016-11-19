@@ -1,16 +1,10 @@
 package org.firstinspires.ftc.robotcontroller.teamcode.Teleop;
 
 
-import android.media.AudioManager;
-import android.media.session.MediaController;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Created by sam on 15-Oct-16.
@@ -75,7 +69,7 @@ public class TeleOp extends LinearOpMode {
         }
     }
     private void toggleLED() {
-        LedEnabled = !LedEnabled;
+        //LedEnabled = !LedEnabled;
 
     }
 }
