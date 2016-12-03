@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Base class for user defined linear operation modes (op modes).
- * <p>
+ * <p/>
  * This class derives from OpMode, but you should not override the methods from
  * OpMode.
  */
@@ -24,10 +24,10 @@ public abstract class CustomLOpMode extends OpMode {
     // State
     //------------------------------------------------------------------------------------------------
 
-    private LinearOpModeHelper helper          = null;
+    private LinearOpModeHelper helper = null;
     private ExecutorService executorService = null;
-    private volatile boolean   isStarted       = false;
-    private volatile boolean   stopRequested   = false;
+    private volatile boolean isStarted = false;
+    private volatile boolean stopRequested = false;
 
     //------------------------------------------------------------------------------------------------
     // Construction
@@ -42,15 +42,17 @@ public abstract class CustomLOpMode extends OpMode {
 
     /**
      * Override this method and place your code here.
-     * <p>
+     * <p/>
      * Please do not swallow the InterruptedException, as it is used in cases
      * where the op mode needs to be terminated early.
+     *
      * @throws InterruptedException
      */
-    abstract public void runOpMode() throws InterruptedException;
+    abstract public void runOpMode() throws Throwable;
 
     /**
      * Pause the Linear Op Mode until start has been pressed
+     *
      * @throws InterruptedException
      */
     public synchronized void waitForStart() throws InterruptedException {
@@ -71,23 +73,22 @@ public abstract class CustomLOpMode extends OpMode {
 
     /**
      * Wait for one full cycle of the hardware
-     * <p>
+     * <p/>
      * Each cycle of the hardware your commands are sent out to the hardware; and
      * the latest data is read back in.
-     * <p>
+     * <p/>
      * This method has a strong guarantee to wait for <strong>at least</strong> one
      * full hardware hardware cycle.
+     *
      * @throws InterruptedException
-     *
-     * @deprecated The need for user code to synchronize with the loop() thread has been
-     *             obviated by improvements in the modern motor and servo controller implementations.
-     *             Remaining uses of this API are likely unncessarily wasting cycles. If a simple non-zero
-     *             delay is required, the {@link Thread#sleep(long) sleep()} method is a better choice.
-     *             If one simply wants to allow other threads to run, {@link #idle()} is a good choice.
-     *
      * @see Thread#sleep(long)
      * @see #idle()
      * @see #waitForNextHardwareCycle()
+     * @deprecated The need for user code to synchronize with the loop() thread has been
+     * obviated by improvements in the modern motor and servo controller implementations.
+     * Remaining uses of this API are likely unncessarily wasting cycles. If a simple non-zero
+     * delay is required, the {@link Thread#sleep(long) sleep()} method is a better choice.
+     * If one simply wants to allow other threads to run, {@link #idle()} is a good choice.
      */
     @Deprecated
     public void waitOneFullHardwareCycle() throws InterruptedException {
@@ -103,23 +104,22 @@ public abstract class CustomLOpMode extends OpMode {
 
     /**
      * Wait for the start of the next hardware cycle
-     * <p>
+     * <p/>
      * Each cycle of the hardware your commands are sent out to the hardware; and
      * the latest data is read back in.
-     * <p>
+     * <p/>
      * This method will wait for the current hardware cycle to finish, which is
      * also the start of the next hardware cycle.
+     *
      * @throws InterruptedException
-     *
-     * @deprecated The need for user code to synchronize with the loop() thread has been
-     *             obviated by improvements in the modern motor and servo controller implementations.
-     *             Remaining uses of this API are likely unncessarily wasting cycles. If a simple non-zero
-     *             delay is required, the {@link Thread#sleep(long) sleep()} method is a better choice.
-     *             If one simply wants to allow other threads to run, {@link #idle()} is a good choice.
-     *
      * @see Thread#sleep(long)
      * @see #idle()
      * @see #waitOneFullHardwareCycle()
+     * @deprecated The need for user code to synchronize with the loop() thread has been
+     * obviated by improvements in the modern motor and servo controller implementations.
+     * Remaining uses of this API are likely unncessarily wasting cycles. If a simple non-zero
+     * delay is required, the {@link Thread#sleep(long) sleep()} method is a better choice.
+     * If one simply wants to allow other threads to run, {@link #idle()} is a good choice.
      */
     @Deprecated
     public void waitForNextHardwareCycle() throws InterruptedException {
@@ -138,12 +138,12 @@ public abstract class CustomLOpMode extends OpMode {
     /**
      * Puts the current thread to sleep for a bit as it has nothing better to do. This allows other
      * threads in the system to run.
-     *
+     * <p/>
      * One should use this method when you have nothing better to do in your code, usually
      * at the very end of your while(opModeIsActive()) loop in TeleOp. Calling idle()
      * is entirely optional: it just helps make the system a little more responsive and a
      * little more efficient.
-     *
+     * <p/>
      * {@link #idle()} is conceptually related to waitOneFullHardwareCycle(), but makes no
      * guarantees as to completing any particular number of hardware cycles, if any.
      *
@@ -177,7 +177,7 @@ public abstract class CustomLOpMode extends OpMode {
      * opMode is not active, the OpMode should terminate at its earliest convenience.
      *
      * @return whether the OpMode is currently active. If this returns false, you should
-     *         break out of the loop in your {@link #runOpMode()} method and return to its caller.
+     * break out of the loop in your {@link #runOpMode()} method and return to its caller.
      * @see #runOpMode()
      * @see #isStarted()
      * @see #isStopRequested()
@@ -213,12 +213,13 @@ public abstract class CustomLOpMode extends OpMode {
      */
     public void initializeRobot() {
     }
+
     @Override
     final public void init() {
         this.executorService = ThreadPool.newSingleThreadExecutor();
-        this.helper          = new LinearOpModeHelper();
-        this.isStarted       = false;
-        this.stopRequested   = false;
+        this.helper = new LinearOpModeHelper();
+        this.isStarted = false;
+        this.stopRequested = false;
 
         this.executorService.execute(helper);
     }
@@ -288,39 +289,65 @@ public abstract class CustomLOpMode extends OpMode {
         }
     }
 
+    @Override
+    protected void postInitLoop() {
+        // Do NOT call super, as that updates telemetry unilaterally
+        if (telemetry instanceof TelemetryInternal) {
+            ((TelemetryInternal) telemetry).tryUpdateIfDirty();
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Telemetry management
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    protected void postLoop() {
+        // Do NOT call super, as that updates telemetry unilaterally
+        if (telemetry instanceof TelemetryInternal) {
+            ((TelemetryInternal) telemetry).tryUpdateIfDirty();
+        }
+    }
+
     protected class LinearOpModeHelper implements Runnable {
 
-        protected RuntimeException exception  = null;
-        protected boolean          isShutdown = false;
+        protected RuntimeException exception = null;
+        protected boolean isShutdown = false;
 
         public LinearOpModeHelper() {
         }
 
         @Override
         public void run() {
-            ThreadPool.logThreadLifeCycle("LinearOpMode main", new Runnable() { @Override public void run() {
-                exception = null;
-                isShutdown = false;
+            ThreadPool.logThreadLifeCycle("LinearOpMode main", new Runnable() {
+                @Override
+                public void run() {
+                    exception = null;
+                    isShutdown = false;
 
-                try {
-                    CustomLOpMode.this.runOpMode();
-                    requestOpModeStop();
-                } catch (InterruptedException ie) {
-                    // InterruptedException, shutting down the op mode
-                    RobotLog.d("LinearOpMode received an InterruptedException; shutting down this linear op mode");
-                } catch (CancellationException ie) {
-                    // In our system, CancellationExceptions are thrown when data was trying to be acquired, but
-                    // an interrupt occurred, and you're in the unfortunate situation that the data acquisition API
-                    // involved doesn't allow InterruptedExceptions to be thrown. You can't return (what data would
-                    // you return?), and so you have to throw a RuntimeException. CancellationException seems the
-                    // best choice.
-                    RobotLog.d("LinearOpMode received a CancellationException; shutting down this linear op mode");
-                } catch (RuntimeException e) {
-                    exception = e;
-                } finally {
-                    isShutdown = true;
+                    try {
+                        CustomLOpMode.this.runOpMode();
+                        requestOpModeStop();
+                    } catch (InterruptedException ie) {
+                        // InterruptedException, shutting down the op mode
+                        RobotLog.d("LinearOpMode received an InterruptedException; shutting down this linear op mode");
+                    } catch (CancellationException ie) {
+                        // In our system, CancellationExceptions are thrown when data was trying to be acquired, but
+                        // an interrupt occurred, and you're in the unfortunate situation that the data acquisition API
+                        // involved doesn't allow InterruptedExceptions to be thrown. You can't return (what data would
+                        // you return?), and so you have to throw a RuntimeException. CancellationException seems the
+                        // best choice.
+                        RobotLog.d("LinearOpMode received a CancellationException; shutting down this linear op mode");
+                    } catch (RuntimeException e) {
+                        exception = e;
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                        RobotLog.d("Not something I'm used to seeing");
+                    } finally {
+                        isShutdown = true;
+                    }
                 }
-            }});
+            });
         }
 
         public boolean hasRuntimeException() {
@@ -335,21 +362,4 @@ public abstract class CustomLOpMode extends OpMode {
             return isShutdown;
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Telemetry management
-    //----------------------------------------------------------------------------------------------
-
-    @Override protected void postInitLoop() {
-        // Do NOT call super, as that updates telemetry unilaterally
-        if (telemetry instanceof TelemetryInternal) {
-            ((TelemetryInternal)telemetry).tryUpdateIfDirty();
-        }
-    }
-
-    @Override protected void postLoop() {
-        // Do NOT call super, as that updates telemetry unilaterally
-        if (telemetry instanceof TelemetryInternal) {
-            ((TelemetryInternal)telemetry).tryUpdateIfDirty();
-        }
-    }}
+}

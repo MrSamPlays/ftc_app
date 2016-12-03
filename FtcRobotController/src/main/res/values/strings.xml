@@ -51,6 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="exit_menu_item">Leave (Don\'t)</string>
     <string name="motd_menu_item">MOTD</string>
     <string name="sss_menu_item">Super Secret Settings (ssh)</string>
+    <string name="notification_blurb">You are ready to compete</string>
 
     <!-- Preferences -->
     <string name="pref_view_logs">View Logs</string>
@@ -61,7 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="toastRestartingRobot">Reviving Robot (2 lives left)</string>
     <string name="toastConfigureRobotBeforeProgrammingMode">You must Configure Robot before starting Scratch, but Worse.</string>
     <string name="toastMOTD">Message of the day:</string>
-    <string name="toastMessage">Are you seriously kidding me?</string>
+    <string name="toastMessage">This is Yesterday\'s message of the day</string>
     <!-- ??? -->
     <string name="activeConfigCaption">I am an active config caption! :)</string>
 

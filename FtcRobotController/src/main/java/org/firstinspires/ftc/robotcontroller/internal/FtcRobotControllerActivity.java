@@ -33,6 +33,9 @@ package org.firstinspires.ftc.robotcontroller.internal;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -40,6 +43,7 @@ import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -76,6 +80,7 @@ import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.hardware.HardwareFactory;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.hardware.configuration.Utility;
 import com.qualcomm.robotcore.robocol.PeerAppRobotController;
@@ -106,7 +111,7 @@ public class FtcRobotControllerActivity extends Activity {
     protected RobotConfigFileManager cfgFileMgr;
 
     protected ProgrammingModeController programmingModeController;
-
+    NotificationManager notificationManager;
     protected UpdateUI.Callback callback;
     protected Context context;
     protected Utility utility;
@@ -127,7 +132,6 @@ public class FtcRobotControllerActivity extends Activity {
 
     protected FtcRobotControllerService controllerService;
     protected NetworkType networkType;
-
     protected FtcEventLoop eventLoop;
     protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
     protected ServiceConnection connection = new ServiceConnection() {
@@ -177,7 +181,21 @@ public class FtcRobotControllerActivity extends Activity {
             }
         }
     }
-
+    public void createNotification(String title, String text) {
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setContentTitle(title);
+        builder.setContentText(text);
+        builder.setAutoCancel(true);
+        Intent intent = new Intent(this, FtcRobotControllerActivity.class);
+        intent.setData(Uri.parse("Yo!"));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        builder.setContentIntent(pendingIntent);
+        Notification notification = builder.build();
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0, notification);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -267,6 +285,7 @@ public class FtcRobotControllerActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        createNotification("If you are reading this...", "Did you remember to set the alliance colour?");
         RobotLog.vv(TAG, "onStart()");
 
         // Undo the effects of shutdownRobot() that we might have done in onStop()
@@ -283,6 +302,7 @@ public class FtcRobotControllerActivity extends Activity {
         });
         AppUtil.getInstance().showToast(context, context.getString(R.string.toastMOTD));
         AppUtil.getInstance().showToast(context, context.getString(R.string.toastMessage));
+
     }
 
     @Override

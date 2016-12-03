@@ -7,9 +7,12 @@ import android.util.Log;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.ViewLogsActivity;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -25,17 +28,25 @@ import org.firstinspires.ftc.robotcore.internal.TelemetryImpl;
  */
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpus No. 99 in G diminished", group = "Trollin'")
 public class TeleOp extends CustomLOpMode {
+    DcMotorController Front;
+    DcMotorController Back;
     DcMotor L;
     DcMotor R;
+    DcMotor BL;
+    DcMotor BR;
     // CRServo analog;
     GyroSensor gyro;
     ColorSensor colour;
     boolean red = GetAllianceMiddleman.isRed();
     ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-    private void InitializeRobot() {
-        L = hardwareMap.dcMotor.get("Left");
+    private void InitializeRobot() throws Throwable{
+        Front = hardwareMap.dcMotorController.get("Front");
+        Back = hardwareMap.dcMotorController.get("Back");
+        L = new DcMotorImpl(Front, 1);
         L.setDirection(DcMotorSimple.Direction.REVERSE);
-        R = hardwareMap.dcMotor.get("Right");
+        R = new DcMotorImpl(Front, 2);
+        BL = new DcMotorImpl(Back, 1);
+        BR = new DcMotorImpl(Back, 2);
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
         colour = new ColorSensor("ColorSensor", hardwareMap, true);
@@ -44,7 +55,7 @@ public class TeleOp extends CustomLOpMode {
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() throws InterruptedException, Throwable {
         InitializeRobot();
         waitForStart();
 
@@ -74,9 +85,12 @@ public class TeleOp extends CustomLOpMode {
             }*/
             L.setMaxSpeed(2048);
             R.setMaxSpeed(2048);
+            BL.setMaxSpeed(2048);
+            BR.setMaxSpeed(2048);
             L.setPower(gamepad1.left_stick_y);
             R.setPower(gamepad1.right_stick_y);
-
+            BL.setPower(gamepad1.left_stick_y);
+            BR.setPower(gamepad1.right_stick_y);
             /*telemetry.addData("Gyro Heading", gyro.getHeading());
             telemetry.addData("Gyro Z Angle", gyro.rawZ());
             telemetry.addData("Gyro status", gyro.status());*/
