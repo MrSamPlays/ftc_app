@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -17,9 +16,6 @@ import com.qualcomm.robotcore.hardware.ServoController;
  * <p>This program is designed to be a robot initializer, thus making the <code>initializeRobot()</code> method 99.9% useless because all the robot initialization is done by calling <code>Robot.initialize()</code></p>
  */
 public class Robot {
-    private static float x = 0;
-    private static float y = 0;
-    private static boolean redAlliance;
     public static DcMotor L;
     public static DcMotor R;
     public static DcMotor BL;
@@ -32,6 +28,10 @@ public class Robot {
     public static GyroSensor gyro;
     public static ServoController servctrl;
     public static CRServo mtrsrv;
+    private static float x = 0;
+    private static float y = 0;
+    private static double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)); //The magnitude of the robot from the origin
+    private static boolean redAlliance;
 
     public static void initialize(HardwareMap hardwareMap) {
         Front = hardwareMap.dcMotorController.get("Front");
@@ -48,7 +48,6 @@ public class Robot {
         mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
         resetEncoders();
     }
-
     public static float getX() {
         return x;
     }
@@ -77,9 +76,9 @@ public class Robot {
      *
      */
     public static void resetEncoders() {
-        BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
