@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -17,16 +18,19 @@ public class OptionsActivity extends Activity {
     private RadioButton allianceChoice;
     private String alliance;
     private Button submit;
+    private EditText delay;
+    private double delayInterval;
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             // get selected radio button from radioGroup
             int selectedId = allianceRadioGroup.getCheckedRadioButtonId();
-
+            delayInterval = Double.parseDouble(delay.getText().toString());
             // find the radiobutton by returned id
             allianceChoice = (RadioButton) findViewById(selectedId);
-            alliance = allianceChoice.getText().toString();
 
+            alliance = allianceChoice.getText().toString();
+            GetAllianceMiddleman.setDelay(delayInterval);
             if (alliance.equalsIgnoreCase("red")) {
                 GetAllianceMiddleman.setAlliance(true);
                 AppUtil.getInstance().showToast("Successfully set Alliance to red");
@@ -62,8 +66,8 @@ public class OptionsActivity extends Activity {
 
     public void addListenerOnButton() {
         allianceRadioGroup = (RadioGroup) findViewById(R.id.allianceChoice);
+        delay = (EditText) findViewById(R.id.delay);
         submit = (Button) findViewById(R.id.submit);
-
         submit.setOnClickListener(onClickListener);
     }
 }

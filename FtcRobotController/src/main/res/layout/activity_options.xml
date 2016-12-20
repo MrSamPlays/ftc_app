@@ -37,6 +37,29 @@
             android:checked="false" />
     </RadioGroup>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Delay Start"
+        android:id="@+id/delaytext"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.02"
+        android:singleLine="false"
+        android:password="false" />
+
+    <EditText
+        android:layout_width="74dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/delay"
+        android:layout_gravity="center_horizontal"
+        android:text="0.0"
+        android:singleLine="true"
+        android:width="3dp"
+        android:textAlignment="center" />
+
     <Button
         android:layout_width="138dp"
         android:layout_height="wrap_content"

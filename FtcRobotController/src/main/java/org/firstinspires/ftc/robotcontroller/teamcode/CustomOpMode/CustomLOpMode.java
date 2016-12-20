@@ -1,10 +1,17 @@
 package org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode;
 
+import android.content.Context;
+import android.content.ContextWrapper;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Hardware;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.HardwareK9bot;
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.internal.TelemetryInternal;
 
 import java.util.concurrent.CancellationException;
@@ -16,10 +23,10 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * This class derives from OpMode, but you should not override the methods from
  * OpMode.
+ *
  */
 @SuppressWarnings("unused")
 public abstract class CustomLOpMode extends OpMode {
-
     //------------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------------
@@ -35,7 +42,6 @@ public abstract class CustomLOpMode extends OpMode {
 
     public CustomLOpMode() {
     }
-
     //------------------------------------------------------------------------------------------------
     // Operations
     //------------------------------------------------------------------------------------------------

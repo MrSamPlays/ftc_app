@@ -1,84 +1,135 @@
 package org.firstinspires.ftc.robotcontroller.teamcode.libs.robot;
 
+import android.media.AudioManager;
+import android.media.ToneGenerator;
+
+import com.qualcomm.hardware.ams.AMSColorSensorImpl;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.CRServoImpl;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.DcMotorImpl;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
+
 
 /**
- * <h1>Notes</h1>
- * <p>This program is designed to be a robot initializer, thus making the <code>initializeRobot()</code> method 99.9% useless because all the robot initialization is done by calling <code>Robot.initialize()</code></p>
+ * <p>
+ *     I'm too lazy to document this code
+ * </p>
  */
+@TeleOp(name = "Robot Class")
+@Disabled
 public class Robot {
-    public static DcMotor L;
-    public static DcMotor R;
-    public static DcMotor BL;
-    public static DcMotor BR;
-    public static DcMotor Winch;
-    public static DcMotorController Front;
-    public static DcMotorController Back;
-    public static DcMotorController Lift;
-    public static DeviceInterfaceModule cdim;
-    public static GyroSensor gyro;
-    public static ServoController servctrl;
-    public static CRServo mtrsrv;
-    private static float x = 0;
-    private static float y = 0;
-    private static double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)); //The magnitude of the robot from the origin
-    private static boolean redAlliance;
+    public DcMotor L;
+    public DcMotor R;
+    public DcMotor BL;
+    public DcMotor BR;
+    public DcMotor Winch;
+    public DcMotorController Front;
+    public DcMotorController Back;
+    public DcMotorController Lift;
+    public DeviceInterfaceModule cdim;
+    public GyroSensor gyro;
+    public ColorSensor colorSensorL;
+    public ColorSensor colorSensorR;
+    public ColorSensor beaconFinder;
+    public ServoController servctrl;
+    public CRServo mtrsrv;
+    HardwareMap hwmap;
+    ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+    ElapsedTime period = new ElapsedTime();
+    boolean initialized = false;
+    private float x = 0;
+    private float y = 0;
+    private double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)); //The magnitude of the robot from the origin
+    private boolean redAlliance;
 
-    public static void initialize(HardwareMap hardwareMap) {
-        Front = hardwareMap.dcMotorController.get("Front");
-        Back = hardwareMap.dcMotorController.get("Back");
-        Lift = hardwareMap.dcMotorController.get("Lift");
-        cdim = hardwareMap.deviceInterfaceModule.get("cdim");
-        gyro = new ModernRoboticsI2cGyro(cdim, 1);
-        servctrl = hardwareMap.servoController.get("Servo Controller 1");
-        L = new DcMotorImpl(Front, 1, DcMotor.Direction.REVERSE);
-        R = new DcMotorImpl(Front, 2);
-        BL = new DcMotorImpl(Back, 1, DcMotor.Direction.REVERSE);
-        BR = new DcMotorImpl(Back, 2);
-        Winch = new DcMotorImpl(Lift, 1);
-        mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
-        resetEncoders();
+    public Robot() {
+
     }
-    public static float getX() {
+
+    public void initializeRobot(HardwareMap aHwMap) {
+        while (!initialized) {
+            hwmap = aHwMap;
+            Front = hwmap.dcMotorController.get("Front");
+            Back = hwmap.dcMotorController.get("Back");
+            // Lift = hwmap.dcMotorController.get("Lift");
+            cdim = hwmap.deviceInterfaceModule.get("cdim");
+            L = hwmap.dcMotor.get("frontLeft");
+            // L = new DcMotorImpl(Front, 1, DcMotor.Direction.REVERSE);
+            // R = new DcMotorImpl(Front, 2);
+            R = hwmap.dcMotor.get("frontRight");
+            // BL = new DcMotorImpl(Back, 1, DcMotor.Direction.REVERSE);
+            BL = hwmap.dcMotor.get("backLeft");
+            // BR = new DcMotorImpl(Back, 2);
+            BR = hwmap.dcMotor.get("backRight");
+            // Winch = new DcMotorImpl(Lift, 1);
+            // servctrl = hwmap.servoController.get("Servo Controller 1");
+            // mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
+            gyro = new ModernRoboticsI2cGyro(cdim, 2);
+            colorSensorL = new ModernRoboticsI2cColorSensor(cdim, 0);
+            colorSensorR = new ModernRoboticsI2cColorSensor(cdim, 1);
+            beaconFinder = new ModernRoboticsI2cColorSensor(cdim, 3);
+            R.setDirection(DcMotor.Direction.REVERSE);
+            BR.setDirection(DcMotor.Direction.REVERSE);
+            resetEncoders();
+            redAlliance = GetAllianceMiddleman.isRed();
+            initialized = true;
+        }
+    }
+
+    public float getX() {
         return x;
     }
 
-    public static void setX(float newX) {
+    public void setX(float newX) {
         x = newX;
     }
 
-    public static float getY() {
+    public float getY() {
         return y;
     }
 
-    public static void setY(float newY) {
+    public void setY(float newY) {
         y = newY;
     }
 
-    public static void setAlliance(boolean isRed) {
+    public void setAlliance(boolean isRed) {
         redAlliance = isRed;
     }
 
-    public static boolean isRedAlliance() {
+    public boolean isRedAlliance() {
         return redAlliance;
     }
 
-    /**
-     *
-     */
-    public static void resetEncoders() {
-        L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void resetEncoders() {
+        while (BL.getCurrentPosition() != 0 && BR.getCurrentPosition() != 0) {
+            BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
+    public void waitForTick(long periodMs) throws InterruptedException {
+
+        long remaining = periodMs - (long) period.milliseconds();
+
+        // sleep for the remaining portion of the regular cycle period.
+        if (remaining > 0)
+            Thread.sleep(remaining);
+
+        // Reset the cycle clock for the next pass.
+        period.reset();
     }
 }
