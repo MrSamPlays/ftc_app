@@ -7,6 +7,7 @@ import com.qualcomm.hardware.ams.AMSColorSensorImpl;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.CRServoImpl;
@@ -17,10 +18,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
+import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
 
 
 /**
@@ -40,27 +43,37 @@ public class Robot {
     public DcMotorController Back;
     public DcMotorController Lift;
     public DeviceInterfaceModule cdim;
-    public GyroSensor gyro;
-    public ColorSensor colorSensorL;
-    public ColorSensor colorSensorR;
-    public ColorSensor beaconFinder;
+    public GyroSensor gyro; // I2C address 0x20, physical port 2
+    public ColorSensor colorSensorL; // I2C address 0x3c, physical port 0
+    public ColorSensor colorSensorR; // I2C address 0x6a, physical port 1
+    public ColorSensor beaconFinder; // I2C address 0x66, physical port 3
     public ServoController servctrl;
     public CRServo mtrsrv;
-    HardwareMap hwmap;
-    ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+    private HardwareMap hwmap;
+    public ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
     ElapsedTime period = new ElapsedTime();
-    boolean initialized = false;
+    // private boolean initialized = false;
     private float x = 0;
     private float y = 0;
     private double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)); //The magnitude of the robot from the origin
     private boolean redAlliance;
 
-    public Robot() {
+    /**
+     * <code>Robot()</code> does not automatically initialize robot
+     */
+    public Robot(){
 
     }
 
+    /**
+     * This constructor automatically initializes the robot
+     * @param map - the <code>HardwareMap</code> to use
+     */
+    public Robot(HardwareMap map) {
+        initializeRobot(map);
+    }
+
     public void initializeRobot(HardwareMap aHwMap) {
-        while (!initialized) {
             hwmap = aHwMap;
             Front = hwmap.dcMotorController.get("Front");
             Back = hwmap.dcMotorController.get("Back");
@@ -77,16 +90,25 @@ public class Robot {
             // Winch = new DcMotorImpl(Lift, 1);
             // servctrl = hwmap.servoController.get("Servo Controller 1");
             // mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
-            gyro = new ModernRoboticsI2cGyro(cdim, 2);
+
+            // colorSensorL = hwmap.colorSensor.get("colorSensorL");
             colorSensorL = new ModernRoboticsI2cColorSensor(cdim, 0);
+            // colorSensorR = hwmap.colorSensor.get("colorSensorR");
             colorSensorR = new ModernRoboticsI2cColorSensor(cdim, 1);
+            // gyro = hwmap.gyroSensor.get("gyro");
+            gyro = new ModernRoboticsI2cGyro(cdim, 2);
+            //beaconFinder = hwmap.colorSensor.get("beaconFinder");
             beaconFinder = new ModernRoboticsI2cColorSensor(cdim, 3);
+            colorSensorL.setI2cAddress(I2cAddr.create8bit(0x3C));
+            colorSensorR.setI2cAddress(I2cAddr.create8bit(0x6a));
+            beaconFinder.setI2cAddress(I2cAddr.create8bit(0x66));
             R.setDirection(DcMotor.Direction.REVERSE);
             BR.setDirection(DcMotor.Direction.REVERSE);
             resetEncoders();
             redAlliance = GetAllianceMiddleman.isRed();
-            initialized = true;
-        }
+            colorSensorL.enableLed(true);
+            colorSensorR.enableLed(true);
+            beaconFinder.enableLed(true);
     }
 
     public float getX() {
