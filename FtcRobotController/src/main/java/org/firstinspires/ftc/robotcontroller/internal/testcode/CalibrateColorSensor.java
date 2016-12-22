@@ -177,8 +177,6 @@ public class CalibrateColorSensor extends OpMode implements I2cPortReadyCallback
             controller_mode = I2CMode.WRITE;
         }
     }
-
-
     /* When the I2C port is ready for read/write action, we may need to take
      * different actions depending on what we have queued. We use the
      * controller_mode variable to track the current state.

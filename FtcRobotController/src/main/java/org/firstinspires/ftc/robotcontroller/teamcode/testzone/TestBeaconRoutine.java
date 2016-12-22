@@ -16,20 +16,21 @@ import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
  */
 @Autonomous(name = "Beacon", group = "not working")
 public class TestBeaconRoutine extends CustomLOpMode {
-    Robot r = new Robot(hardwareMap);
+    Robot r = new Robot();
     @Override
     public void runOpMode() throws Throwable {
         r.initializeRobot(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
             r.cdim.setLED(1, true);
-            r.cdim.enableI2cReadMode(0, I2cAddr.create8bit(0x3c),0x03, 2);
-            telemetry.addData("Beacon Color", r.beaconFinder.argb());
+            telemetry.addData("Left Color", Integer.toHexString(r.colorSensorL.argb()));
+            telemetry.addData("Right Color", Integer.toHexString(r.colorSensorR.argb()));
+            telemetry.addData("Beacon Color", Integer.toHexString(r.beaconFinder.argb()));
             telemetry.addData("Left Color sensor I2c address", r.colorSensorL.getI2cAddress().get8Bit());
             telemetry.addData("Right Color sensor I2c address", r.colorSensorR.getI2cAddress().get8Bit());
             telemetry.addData("Beacon finder color sensor I2c address", r.beaconFinder.getI2cAddress().get8Bit());
             telemetry.addData("Gyro", r.gyro.getHeading());
-            r.generator.startTone(ToneGenerator.TONE_SUP_DIAL, 1000);
+            r.generator.startTone(ToneGenerator.TONE_DTMF_4, 1000);
             telemetry.update();
             idle();
         }
