@@ -9,5 +9,5 @@ Version 2 now ported for four motors.</p>
 <p>
 Days since Last crash: 0
 </p>
-<a href="http://slither.io">You can click here to</a>
-<a href="https://github.com/ftctechnh/ftc_app/blob/master/README.md">see here for original FTC changelog</a>
+<a href="http://slither.io">You can click</a>
+<a href="https://github.com/ftctechnh/ftc_app/blob/master/README.md">here for original FTC changelog</a>
