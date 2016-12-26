@@ -38,13 +38,12 @@ import android.graphics.Bitmap;
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.NavLibs;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.sensors.ColorSensor;
 
 @Autonomous(name = "General Automaticness", group = "Nathan's Test Routines")
@@ -57,10 +56,6 @@ public class AutoOpGeneral extends LinearOpMode {
     private Bitmap beacons = null;
     private Bitmap centerVortex = null;
     private Bitmap cornerVortex = null;
-
-    private DcMotor leftMotor = null;
-    private DcMotor rightMotor = null;
-
     private ColorSensor bottomSensor = null;
 
     private NavLibs navigator = null;
@@ -78,30 +73,31 @@ public class AutoOpGeneral extends LinearOpMode {
         centerVortex = ImageReader.loadImage(R.drawable.center_vortex, 36, 36);
         cornerVortex = ImageReader.loadImage(R.drawable.corner_vortex, 36, 36);
 
+        Robot.initialize(hardwareMap);
+
         /* eg: Initialize the hardware variables. Note that the strings used here as parameters
          * to 'get' must correspond to the names assigned during the robot configuration
          * step (using the FTC Robot Controller app on the phone).
-         */
-        leftMotor = hardwareMap.dcMotor.get("Left");
-        rightMotor = hardwareMap.dcMotor.get("Right");
+
+        // eg: Set the drive motor directions:
+        // "Reverse" the motor that runs backwards when connected directly to the battery
+        leftMotor.setDirection(DcMotor.Direction.FORWARD);
+        rightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         bottomSensor = new ColorSensor("ColorSensor", hardwareMap);
 
         navigator = new NavLibs(leftMotor, rightMotor, sides, beacons, centerVortex, cornerVortex);
 
-        // eg: Set the drive motor directions:
-        // "Reverse" the motor that runs backwards when connected directly to the battery
-        // leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        // rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-
         // Wait for the game to start (driver presses PLAY)
-
         waitForStart();
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-            boolean isRed = GetAllianceMiddleman.isRed();
+
+        runNav();
+
+        /*while (opModeIsActive()) {
+            boolean isRed = Robot.isRedAlliance();
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Color R", bottomSensor.getColor()[0]);
             telemetry.addData("Color G", bottomSensor.getColor()[1]);
@@ -109,11 +105,24 @@ public class AutoOpGeneral extends LinearOpMode {
             telemetry.addData("Found line?", navigator.testColor(bottomSensor, new float[]{255, 0, 0}, 50));
             telemetry.update();
 
-            // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-            // leftMotor.setPower(-gamepad1.left_stick_y);
-            // rightMotor.setPower(-gamepad1.right_stick_y);
-
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+        }*/
+    }
+
+    public void runNav() throws InterruptedException {
+        Robot.drive.setAllMotorSpeed(100);
+
+        // EventDoer foundLine = navigator.findColor(bottomSensor, new float[]{150, 0, 0}, 75);
+
+        // while(!foundLine.isTriggered() && opModeIsActive()) {
+        while (opModeIsActive()) {
+            idle();
         }
+
+        /**
+         * if(!opModeIsActive()) {
+         return;
+         }
+         */
     }
 }

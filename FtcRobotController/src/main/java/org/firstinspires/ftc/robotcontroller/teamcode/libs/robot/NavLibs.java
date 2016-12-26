@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.sensors.ColorSensor;
 
+import java.util.Timer;
+
 public class NavLibs {
     private Bitmap sides = null;
     private Bitmap beacons = null;
@@ -28,9 +30,18 @@ public class NavLibs {
         findColor(bottomSensor, color, 40);
     }
 
-    public void findColor(ColorSensor bottomSensor, float[] color, int sensitivity) {
-        while (testColor(bottomSensor, color, sensitivity)) {
-        }
+    public EventDoer findColor(ColorSensor bottomSensor, float[] color, int sensitivity) {
+        leftMotor.setPower(1);
+        rightMotor.setPower(1);
+
+        EventDoer doer = new FindLineDoer(bottomSensor, color, sensitivity);
+        EventHandler handler = new FindLineHandler(leftMotor, rightMotor);
+        doer.addHandler(handler);
+
+        Timer timer = new Timer();
+        timer.schedule(doer, 0, 1);
+
+        return doer;
     }
 
     public boolean testColor(ColorSensor sensor, float[] color, int sensitivity) {
@@ -53,5 +64,40 @@ public class NavLibs {
         boolean bInRange = (color[2] + sensitivity) > sensorColor[2] && sensorColor[2] > (color[2] - sensitivity);
 
         return rInRange && gInRange && bInRange;
+    }
+}
+
+class FindLineHandler implements EventHandler {
+    private DcMotor leftMotor;
+    private DcMotor rightMotor;
+
+    public FindLineHandler(DcMotor leftMotor, DcMotor rightMotor) {
+        this.leftMotor = leftMotor;
+        this.rightMotor = rightMotor;
+    }
+
+    @Override
+    public void handleEvent() {
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+    }
+}
+
+class FindLineDoer extends EventDoer {
+    private NavLibs navlibs;
+    private ColorSensor sensor;
+    private float[] color;
+    private int sensitivity;
+
+    public FindLineDoer(ColorSensor sensor, float[] color, int sensitivity) {
+        navlibs = new NavLibs(null, null, null, null, null, null);
+        this.sensor = sensor;
+        this.color = color;
+        this.sensitivity = sensitivity;
+    }
+
+    @Override
+    public boolean testEvent() {
+        return navlibs.testColor(sensor, color, sensitivity);
     }
 }

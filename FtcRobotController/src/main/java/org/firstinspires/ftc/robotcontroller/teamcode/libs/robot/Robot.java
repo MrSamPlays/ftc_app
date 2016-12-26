@@ -6,11 +6,17 @@ import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.ServoController;
+
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.motors.DriveSetHandler;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.motors.MotorHandler;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.motors.MotorSet;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.motors.MotorSetType;
+
+import java.util.HashMap;
 
 /**
  * <h1>Notes</h1>
@@ -19,7 +25,16 @@ import com.qualcomm.robotcore.hardware.ServoController;
 public class Robot {
     private static float x = 0;
     private static float y = 0;
-    private static boolean redAlliance;
+
+    /**
+     * This is the orientation in degrees
+     **/
+    private static double orientation;
+
+    private static boolean redAlliance = true;
+
+    public static DriveSetHandler drive;
+
     public static DcMotor L;
     public static DcMotor R;
     public static DcMotor BL;
@@ -36,33 +51,59 @@ public class Robot {
     public static void initialize(HardwareMap hardwareMap) {
         Front = hardwareMap.dcMotorController.get("Front");
         Back = hardwareMap.dcMotorController.get("Back");
-        Lift = hardwareMap.dcMotorController.get("Lift");
-        cdim = hardwareMap.deviceInterfaceModule.get("cdim");
+        //Lift = hardwareMap.dcMotorController.get("Lift");
+        //dcdim = hardwareMap.deviceInterfaceModule.get("cdim");
         gyro = new ModernRoboticsI2cGyro(cdim, 1);
         servctrl = hardwareMap.servoController.get("Servo Controller 1");
+
+        HashMap<String, MotorHandler> driveMotorSet = new HashMap<String, MotorHandler>();
+
         L = new DcMotorImpl(Front, 1, DcMotor.Direction.REVERSE);
+        MotorHandler frontLeft = new MotorHandler(L);
+        driveMotorSet.put("frontLeft", frontLeft);
+
         R = new DcMotorImpl(Front, 2);
+        MotorHandler frontRight = new MotorHandler(R);
+        driveMotorSet.put("frontRight", frontRight);
+
         BL = new DcMotorImpl(Back, 1, DcMotor.Direction.REVERSE);
+        MotorHandler backLeft = new MotorHandler(BL);
+        driveMotorSet.put("backLeft", backLeft);
+
         BR = new DcMotorImpl(Back, 2);
+        MotorHandler backRight = new MotorHandler(BR);
+        driveMotorSet.put("backRight", backRight);
+
+        MotorSet driveMotors = new MotorSet(driveMotorSet);
+        drive = new DriveSetHandler(driveMotors, MotorSetType.DRIVE);
+
         Winch = new DcMotorImpl(Lift, 1);
         mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
         resetEncoders();
-    }
-
-    public static float getX() {
-        return x;
     }
 
     public static void setX(float newX) {
         x = newX;
     }
 
-    public static float getY() {
-        return y;
+    public static float getX() {
+        return x;
     }
 
     public static void setY(float newY) {
         y = newY;
+    }
+
+    public static float getY() {
+        return y;
+    }
+
+    public static void setOrientation(double newOrientation) {
+        orientation = newOrientation;
+    }
+
+    public static double getOrientation() {
+        return orientation;
     }
 
     public static void setAlliance(boolean isRed) {

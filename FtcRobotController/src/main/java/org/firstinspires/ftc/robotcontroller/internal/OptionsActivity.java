@@ -5,18 +5,22 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.qualcomm.ftcrobotcontroller.R;
 
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 import org.firstinspires.ftc.robotcore.internal.AppUtil;
 
 public class OptionsActivity extends Activity {
     private RadioGroup allianceRadioGroup;
     private RadioButton allianceChoice;
+    private EditText distance;
     private String alliance;
     private Button submit;
+
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -28,11 +32,25 @@ public class OptionsActivity extends Activity {
             alliance = allianceChoice.getText().toString();
 
             if (alliance.equalsIgnoreCase("red")) {
-                GetAllianceMiddleman.setAlliance(true);
+                Robot.setAlliance(true);
                 AppUtil.getInstance().showToast("Successfully set Alliance to red");
             } else {
-                GetAllianceMiddleman.setAlliance(false);
+                Robot.setAlliance(false);
                 AppUtil.getInstance().showToast("Successfully set Alliance to blue");
+            }
+
+            float distanceFromWall = Float.parseFloat(distance.getText().toString());
+
+            if (Robot.isRedAlliance()) {
+                Robot.setX(distanceFromWall);
+                Robot.setY(0);
+
+                Robot.setOrientation(90);
+            } else {
+                Robot.setX(0);
+                Robot.setY(distanceFromWall);
+
+                Robot.setOrientation(0);
             }
         }
     };
@@ -62,6 +80,7 @@ public class OptionsActivity extends Activity {
 
     public void addListenerOnButton() {
         allianceRadioGroup = (RadioGroup) findViewById(R.id.allianceChoice);
+        distance = (EditText) findViewById(R.id.distance);
         submit = (Button) findViewById(R.id.submit);
 
         submit.setOnClickListener(onClickListener);
