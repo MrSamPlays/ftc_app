@@ -29,4 +29,7 @@ public class GetAllianceMiddleman {
     public static double getDelay() {
         return delay;
     }
+    public static double getDelayms() {
+        return delay * 1000;
+    }
 }

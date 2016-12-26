@@ -24,7 +24,7 @@ public class CalibrateColorSensor extends OpMode implements I2cPortReadyCallback
 
     // IMPORTANT!
     // What did you name your color sensor in the Robot Controller config?
-    String color_sensor_name = "color";
+    String color_sensor_name = "ColorSensorL";
 
     // Color Sensor hardware
     ModernRoboticsI2cColorSensor color_sensor;
