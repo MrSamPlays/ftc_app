@@ -46,7 +46,7 @@ import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.NavLibs;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.sensors.ColorSensor;
 
-@Autonomous(name = "General Automaticness", group = "Nathan's Test Routines")
+@Autonomous(name = "General Automaticness", group = "Nathan's Deprecated Test Routines")
 public class AutoOpGeneral extends LinearOpMode {
 
     /* Declare OpMode members. */

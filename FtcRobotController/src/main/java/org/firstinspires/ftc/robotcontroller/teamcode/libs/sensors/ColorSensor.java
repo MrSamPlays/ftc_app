@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * dirty work for you. It contains many methods, so check each ont to make sure that it's right.
  *
  * @author medude
+ * Very gud
  */
 public class ColorSensor {
     /*--------------------------------------------------------------/
@@ -65,7 +66,7 @@ public class ColorSensor {
      * This is a constructor- don't edit it, just fullConstructor.
      *
      * @param name This is the name given to the color sensor from the setup.
-     * @param hardwareMap This is a refrence to the hardware map.
+     * @param hardwareMap This is a reference to the hardware map.
      */
     public ColorSensor(String name, HardwareMap hardwareMap) {
         fullConstructor(name, hardwareMap, true);
@@ -74,7 +75,7 @@ public class ColorSensor {
     /**
      * This is a constructor- don't edit it, just fullConstructor.
      *
-     * @param hardwareMap This is a refrence to the hardware map.
+     * @param hardwareMap This is a reference to the hardware map.
      * @param rgb This is if you want the output mode to be in RGB or HSV.
      */
     public ColorSensor(HardwareMap hardwareMap, boolean rgb) {
@@ -84,7 +85,7 @@ public class ColorSensor {
     /**
      * This is a constructor- don't edit it, just fullConstructor.
      *
-     * @param hardwareMap This is a refrence to the hardware map.
+     * @param hardwareMap This is a reference to the hardware map.
      */
     public ColorSensor(HardwareMap hardwareMap) {
         fullConstructor("colorSensor", hardwareMap, true);

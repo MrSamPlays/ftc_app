@@ -20,6 +20,8 @@ public class OptionsActivity extends Activity {
     private EditText distance;
     private String alliance;
     private Button submit;
+    private EditText delay;
+    private double delayInterval;
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -30,7 +32,7 @@ public class OptionsActivity extends Activity {
             // find the radiobutton by returned id
             allianceChoice = (RadioButton) findViewById(selectedId);
             alliance = allianceChoice.getText().toString();
-
+            GetAllianceMiddleman.setDelay(delayInterval);
             if (alliance.equalsIgnoreCase("red")) {
                 Robot.setAlliance(true);
                 AppUtil.getInstance().showToast("Successfully set Alliance to red");
@@ -80,9 +82,9 @@ public class OptionsActivity extends Activity {
 
     public void addListenerOnButton() {
         allianceRadioGroup = (RadioGroup) findViewById(R.id.allianceChoice);
+        delay = (EditText) findViewById(R.id.delay);
         distance = (EditText) findViewById(R.id.distance);
         submit = (Button) findViewById(R.id.submit);
-
         submit.setOnClickListener(onClickListener);
     }
 }
