@@ -1,8 +1,8 @@
 Images are 36px*36px
 Each pixel represents 4 inches
 
-The image is oriented such that the Red Alliance is in the top right corner, and the Blue Alliance
-in the bottom left (see sides.png).
+The image is oriented such that the Red Alliance corner vortex is in the top left corner, and the
+Blue Alliance corner vortex in the bottom right (see sides.png).
 
 Each image type has a specific documentation:
     Sides: The sides.png image tells the robot which alliance is which. The blue color represents
