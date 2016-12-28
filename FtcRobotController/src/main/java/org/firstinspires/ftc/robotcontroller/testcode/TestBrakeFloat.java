@@ -30,34 +30,61 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.robotcontroller.internal.testcode;
+package org.firstinspires.ftc.robotcontroller.testcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * A simple test of a continuous rotation servo
+ * An opmode that simply tests the brake and float behavior.
  */
-@Autonomous(name="Test CR Servo", group ="Tests")
+@Autonomous(name="Test Brake/Float", group ="Tests")
 @Disabled
-public class TestCRServo extends LinearOpMode
+public class TestBrakeFloat extends LinearOpMode
     {
+    DcMotor motorLeft;
+    DcMotor motorRight;
+
     @Override
     public void runOpMode() throws InterruptedException
         {
-        CRServo servo = this.hardwareMap.crservo.get("crservo");
+        motorLeft = this.hardwareMap.dcMotor.get("motorLeft");
+        motorRight = this.hardwareMap.dcMotor.get("motorRight");
+
+        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
 
-        servo.setPower(1.0);
-        Thread.sleep(4000);
+        int msInterval = 1500;
+        double power = 0.75;
+        while (opModeIsActive())
+            {
+            motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        servo.setPower(0.0);
-        Thread.sleep(1000);
+            motorLeft.setPower(power);
+            motorRight.setPower(power);
+            Thread.sleep(msInterval);
 
-        servo.setPower(-1.0);
-        Thread.sleep(4000);
+            motorLeft.setPower(0.0);
+            motorRight.setPower(0.0);
+            Thread.sleep(msInterval);
+
+
+            motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+            motorLeft.setPower(power);
+            motorRight.setPower(power);
+            Thread.sleep(msInterval);
+
+            motorLeft.setPower(0.0);
+            motorRight.setPower(0.0);
+            Thread.sleep(msInterval);
+            }
         }
+
     }

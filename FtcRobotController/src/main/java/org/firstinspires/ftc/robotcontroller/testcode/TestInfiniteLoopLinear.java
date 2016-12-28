@@ -30,34 +30,32 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.robotcontroller.internal.testcode;
+package org.firstinspires.ftc.robotcontroller.testcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
- * {@link TestInfiniteLoopIterative} is a simple test that runs an infinite loop
+ * {@link TestInfiniteLoopLinear} is a simple test that runs an infinite loop
  */
-@TeleOp(name = "Test: Infinite Loop (Iterative)", group = "Tests")
+@TeleOp(name = "Test: Infinite Loop (Linear)", group = "Tests")
 @Disabled
-public class TestInfiniteLoopIterative extends OpMode {
+public class TestInfiniteLoopLinear extends LinearOpMode {
 
-    @Override public void init()
-        {
-        // Nothing to do
-        }
+    @Override public void runOpMode() throws InterruptedException {
 
-    @Override public void loop() {
-
-        telemetry.addData("message", "starting infinite loop...");
-        updateTelemetry(telemetry);
+        waitForStart();
 
         // Do nothing, forever
         for (int count = 0; ; count++) {
-            telemetry.addData("count", count);
-            updateTelemetry(telemetry);
-            Thread.yield();
+            try {
+                telemetry.addData("count", count);
+                updateTelemetry(telemetry);
+                idle();
+            } catch (InterruptedException e) {
+                // ignore: we're trying to do an infinite loop!
+            }
         }
     }
 }

@@ -30,64 +30,51 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.robotcontroller.internal.testcode;
+package org.firstinspires.ftc.robotcontroller.testcode;
 
+import android.graphics.Color;
+
+import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * A simple test that runs one motor and one servo at a time.
+ * A simple test of a pair of color sensors
  */
-@Autonomous(name = "TestMotorServo", group = "Tests")
+@Autonomous(name="Test Two Color Sensors", group ="Tests")
 @Disabled
-public class TestMotorServoLinear extends LinearOpMode
+public class TwoColorSensorsTelemetry extends LinearOpMode
     {
+    AMSColorSensor leftColorSensor;
+    AMSColorSensor rightColorSensor;
+
     @Override
     public void runOpMode() throws InterruptedException
         {
-        DcMotor motor = this.hardwareMap.dcMotor.get("motorRight");
-        Servo servo = this.hardwareMap.servo.get("servo");
+        leftColorSensor  = (AMSColorSensor)hardwareMap.colorSensor.get("leftColorSensor");
+        rightColorSensor = (AMSColorSensor)hardwareMap.colorSensor.get("rightColorSensor");
+
+        AMSColorSensor.Parameters params = leftColorSensor.getParameters();
+        // possibly change some (notably gain and / or integration time), then
+        // leftColorSensor.initialize(params);
+
+        params = rightColorSensor.getParameters();
+        // possibly change some (notably gain and / or integration time), then
+        // rightColorSensor.initialize(params);
 
         waitForStart();
 
-        double servoPosition = 0;
-        servo.setPosition(servoPosition);
-
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        ElapsedTime elapsedTime = new ElapsedTime();
-        int spinCount = 0;
-
-        while (this.opModeIsActive())
+        while (opModeIsActive())
             {
-            servoPosition += 1. / 256.;
-            if (servoPosition >= 1)
-                servoPosition = 0;
-            servo.setPosition(servoPosition);
-
-            motor.setPower(0.15);
-
-            spinCount++;
-            double ms = elapsedTime.milliseconds();
-            telemetry.addData("position", format(servoPosition));
-            telemetry.addData("#spin",    format(spinCount));
-            telemetry.addData("ms/spin",  format(ms / spinCount));
+            int left = leftColorSensor.argb();
+            int right = rightColorSensor.argb();
+            telemetry.addData("left", String.format("a=%d r=%d g=%d b=%d", Color.alpha(left), Color.red(left), Color.green(left), Color.blue(left)));
+            telemetry.addData("right", String.format("a=%d r=%d g=%d b=%d", Color.alpha(right), Color.red(right), Color.green(right), Color.blue(right)));
             this.updateTelemetry(telemetry);
+
+            Thread.sleep(500);
             }
 
-        motor.setPower(0);
-        }
-
-    static String format(double d)
-        {
-        return String.format("%.3f", d);
-        }
-    static String format(int i)
-        {
-        return String.format("%d", i);
         }
     }

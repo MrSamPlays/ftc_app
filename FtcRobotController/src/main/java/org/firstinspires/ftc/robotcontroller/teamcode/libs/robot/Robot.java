@@ -6,8 +6,6 @@ import android.media.ToneGenerator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -70,6 +68,7 @@ public class Robot {
     /**
      * This constructor automatically initializes the robot
      * Instantiate the class before calling <code>waitForStart()</code>
+     *
      * @param map - the <code>HardwareMap</code> to use
      */
     public Robot(HardwareMap map) {
@@ -114,6 +113,10 @@ public class Robot {
         colorSensorR.enableLed(true);
         beaconFinder.enableLed(true);
         distanceSensor.enableLed(true);
+        L.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        R.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         gyro.calibrate();
         while (gyro.isCalibrating()) {
             generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 100);
@@ -144,6 +147,29 @@ public class Robot {
         return redAlliance;
     }
 
+    public void haltMotors() {
+        L.setPower(0);
+        R.setPower(0);
+        BL.setPower(0);
+        BR.setPower(0);
+    }
+    public void haltMotors(boolean coast) {
+        L.setPower(0);
+        R.setPower(0);
+        BL.setPower(0);
+        BR.setPower(0);
+        if (!coast) {
+            L.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            R.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        } else {
+            L.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            R.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+    }
 
     public void resetEncoders() {
         while (BL.getCurrentPosition() != 0 && BR.getCurrentPosition() != 0 && L.getCurrentPosition() != 0 && R.getCurrentPosition() != 0) {
@@ -157,6 +183,7 @@ public class Robot {
             R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
+
     public void waitForTick(long periodMs) throws InterruptedException {
 
         long remaining = periodMs - (long) period.milliseconds();
@@ -172,5 +199,24 @@ public class Robot {
     public int getColourRGB(ColorSensor sensor) {
         int color = (sensor.red() << 16 | sensor.green() << 8 | sensor.blue());
         return color;
+    }
+
+    public void moveStraight(int distance, double power) {
+        resetEncoders();
+        if (distance < 0 || power < 0) {
+            while (L.getCurrentPosition() > -Math.abs(distance)) {
+                L.setPower(-Math.abs(power));
+                R.setPower(-Math.abs(power));
+                BL.setPower(-Math.abs(power));
+                BR.setPower(-Math.abs(power));
+            }
+        } else {
+            while (L.getCurrentPosition() < distance) {
+                L.setPower(power);
+                R.setPower(power);
+                BL.setPower(power);
+                BR.setPower(power);
+            }
+        }
     }
 }

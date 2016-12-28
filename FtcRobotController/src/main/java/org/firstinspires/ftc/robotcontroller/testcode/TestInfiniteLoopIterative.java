@@ -30,61 +30,34 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.robotcontroller.internal.testcode;
+package org.firstinspires.ftc.robotcontroller.testcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 /**
- * An opmode that simply tests the brake and float behavior.
+ * {@link TestInfiniteLoopIterative} is a simple test that runs an infinite loop
  */
-@Autonomous(name="Test Brake/Float", group ="Tests")
+@TeleOp(name = "Test: Infinite Loop (Iterative)", group = "Tests")
 @Disabled
-public class TestBrakeFloat extends LinearOpMode
-    {
-    DcMotor motorLeft;
-    DcMotor motorRight;
+public class TestInfiniteLoopIterative extends OpMode {
 
-    @Override
-    public void runOpMode() throws InterruptedException
+    @Override public void init()
         {
-        motorLeft = this.hardwareMap.dcMotor.get("motorLeft");
-        motorRight = this.hardwareMap.dcMotor.get("motorRight");
-
-        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        waitForStart();
-
-        int msInterval = 1500;
-        double power = 0.75;
-        while (opModeIsActive())
-            {
-            motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-            motorLeft.setPower(power);
-            motorRight.setPower(power);
-            Thread.sleep(msInterval);
-
-            motorLeft.setPower(0.0);
-            motorRight.setPower(0.0);
-            Thread.sleep(msInterval);
-
-
-            motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-            motorLeft.setPower(power);
-            motorRight.setPower(power);
-            Thread.sleep(msInterval);
-
-            motorLeft.setPower(0.0);
-            motorRight.setPower(0.0);
-            Thread.sleep(msInterval);
-            }
+        // Nothing to do
         }
 
+    @Override public void loop() {
+
+        telemetry.addData("message", "starting infinite loop...");
+        updateTelemetry(telemetry);
+
+        // Do nothing, forever
+        for (int count = 0; ; count++) {
+            telemetry.addData("count", count);
+            updateTelemetry(telemetry);
+            Thread.yield();
+        }
     }
+}

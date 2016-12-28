@@ -13,7 +13,16 @@ import com.qualcomm.ftcrobotcontroller.R;
 
 import org.firstinspires.ftc.robotcore.internal.AppUtil;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
+
 public class OptionsActivity extends Activity {
+    private Properties prop = new Properties();
+    private OutputStream out = null;
+    private InputStream in = null;
     private RadioGroup allianceRadioGroup;
     private RadioButton allianceChoice;
     private String alliance;
@@ -24,6 +33,7 @@ public class OptionsActivity extends Activity {
         @Override
         public void onClick(View v) {
             // get selected radio button from radioGroup
+
             int selectedId = allianceRadioGroup.getCheckedRadioButtonId();
             delayInterval = Double.parseDouble(delay.getText().toString());
             // find the radiobutton by returned id
@@ -38,6 +48,21 @@ public class OptionsActivity extends Activity {
                 GetAllianceMiddleman.setAlliance(false);
                 AppUtil.getInstance().showToast("Successfully set Alliance to blue");
             }
+            try {
+                out = new FileOutputStream("config.properties");
+                prop.setProperty("AllianceChoice", alliance);
+                prop.setProperty("delay", Double.toString(delayInterval));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                }
+            }
         }
     };
 
@@ -50,6 +75,23 @@ public class OptionsActivity extends Activity {
     public void onStart() {
         super.onStart();
         setContentView(R.layout.activity_options);
+        try {
+            in = new FileInputStream("config.properties");
+            prop.load(in);
+            alliance = prop.getProperty("AllianceChoice");
+            delay.setText(prop.getProperty("delay"));
+            delayInterval = Double.parseDouble(prop.getProperty("delay"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (Throwable e2) {
+                    e2.printStackTrace();
+                }
+            }
+        }
         addListenerOnButton();
     }
 
