@@ -2,6 +2,7 @@ package org.firstinspires.ftc.robotcontroller.teamcode.testzone;
 
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.support.annotation.MainThread;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -35,17 +36,37 @@ public class TestRobotConfig extends CustomLOpMode {
         }
     };
     Thread t = new Thread(runnable);
+    Runnable driveL = new Runnable() {
+        @Override
+        public void run() {
+            while (opModeIsActive()) {
+                r.L.setPower(-gamepad1.left_stick_y);
+                r.BL.setPower(-gamepad1.left_stick_y);
+            }
+        }
+    };
+    Runnable driveR = new Runnable() {
+        @Override
+        public void run() {
+            while (opModeIsActive()) {
+                r.R.setPower(-gamepad1.right_stick_y);
+                r.BR.setPower(-gamepad1.right_stick_y);
+            }
+        }
+    };
+    Thread teleOpL = new Thread(driveL);
+    Thread teleOpR = new Thread(driveR);
 
+    @Override
+    @MainThread
     public void runOpMode() throws Throwable {
         r.initializeRobot(hardwareMap);
         waitForStart();
         t.start();
+        teleOpL.start();
+        teleOpR.start();
         while (opModeIsActive()) {
             // resetEncoders();
-            r.L.setPower(-gamepad1.left_stick_y);
-            r.BL.setPower(-gamepad1.left_stick_y);
-            r.R.setPower(-gamepad1.right_stick_y);
-            r.BR.setPower(-gamepad1.right_stick_y);
             telemetry.addData("Left Color", Integer.toHexString(r.colorSensorL.argb()));
             telemetry.addData("Right Color", Integer.toHexString(r.colorSensorR.argb()));
             telemetry.addData("Beacon Color", Integer.toHexString(r.beaconFinder.argb()));
@@ -56,12 +77,13 @@ public class TestRobotConfig extends CustomLOpMode {
             telemetry.addData("Optical distance reading raw", r.distanceSensor.getRawLightDetected());
             telemetry.addData("Gyro", r.gyro.getHeading());
             telemetry.addData("Alliance color", (GetAllianceMiddleman.isRed() ? "Red" : "Blue"));
-
             telemetry.addData("EncoderL", r.L.getCurrentPosition());
             telemetry.addData("EncoderR", r.R.getCurrentPosition());
             telemetry.update();
             idle();
         }
         t = null;
+        teleOpL = null;
+        teleOpR = null;
     }
 }

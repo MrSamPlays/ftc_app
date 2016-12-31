@@ -37,16 +37,6 @@
             android:checked="false" />
     </RadioGroup>
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/distance"
-        android:layout_gravity="right"
-        android:layout_weight="0.02"
-        android:hint="Distance from opponent&apos;s wall (feet)" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,11 +58,25 @@
         android:text="0"
         android:hint='"Enter a number"' />
 
-    <Button
-        android:layout_width="137dp"
-        android:layout_height="60dp"
-        android:text="@string/submit"
-        android:id="@+id/submit"
-        android:layout_gravity="center_horizontal" />
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="327dp">
+
+        <Button
+            android:text="Cancel"
+            android:layout_width="188dp"
+            android:layout_height="60dp"
+            android:id="@+id/cancel"
+            android:layout_gravity="end"
+            android:layout_weight="0.06" />
+
+        <Button
+            android:layout_width="164dp"
+            android:layout_height="60dp"
+            android:text="@string/submit"
+            android:id="@+id/submit"
+            android:elevation="0dp"
+            android:layout_gravity="start" />
+    </GridLayout>
 
 </LinearLayout>

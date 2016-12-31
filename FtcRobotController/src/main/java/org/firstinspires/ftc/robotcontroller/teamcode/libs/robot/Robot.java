@@ -138,7 +138,7 @@ public class Robot {
         x = newX;
     }
 
-    public static float getY() {
+    public float getY() {
         return y;
     }
 

@@ -58,6 +58,7 @@ public class TestBeaconRoutine extends CustomLOpMode {
 
     private void KnockBallDown() throws InterruptedException {
         r.resetEncoders();
+
         while (r.L.getCurrentPosition() < 3200 && opModeIsActive()) {
             r.L.setPower(1);
             r.R.setPower(1);
@@ -85,27 +86,35 @@ public class TestBeaconRoutine extends CustomLOpMode {
                 idle();
             }
         }
+        r.resetEncoders();
+        while (r.L.getCurrentPosition() > -1100) {
+            r.L.setPower(-1);
+            r.R.setPower(-1);
+            r.BL.setPower(-1);
+            r.BR.setPower(-1);
+        }
     }
     private void findLine() {
         // TODO finish adding line finder
         boolean linefound = false;
         while (!linefound) {
-            // change the first parameter to check at this interval, lower number means increased checking interval
+            // change the first parameter to check at this interval, lower number means increased checking interval thus increasing robot stutter movement
             r.moveStraight(600, MOTOR_MOVE_CONSTANT);
             if (r.colorSensorL.argb() != 0 || r.colorSensorR.argb() != 0) {
                 linefound = true;
             }
             if (r.distanceSensor.getLightDetected() > 0.01 && !linefound) {
-                // we did not find the line
+                // we did not find the line back up and do something else
                 r.moveStraight(-1200, MOTOR_MOVE_CONSTANT);
             }
         }
+        // Stop robot // STOPSHIP: 28-Dec-16
         r.moveStraight(0, 0);
     }
     private void followLine() throws InterruptedException {
         // TODO add line following routine
         r.resetEncoders();
-        while (r.distanceSensor.getLightDetected() < 0.1 && opModeIsActive()) {
+        while (r.distanceSensor.getLightDetected() < 0.05 && opModeIsActive()) {
             if (r.colorSensorL.argb() > 0x3030304 && r.colorSensorR.argb() == 0x00) {
                 if (r.gyro.getHeading() > 10 && r.gyro.getHeading() < 90) {
                     r.L.setPower(0);
@@ -172,11 +181,23 @@ public class TestBeaconRoutine extends CustomLOpMode {
             } else {
                 // hit it again then move on
                 r.moveStraight(-500, 1);
+                sleep(5000);
                 r.moveStraight(500, 0.5);
             }
         }
     }
-
+    class BoopBeep implements Runnable {
+        @Override
+        public void run() {
+            r.generator.startTone(ToneGenerator.TONE_CDMA_ANSWER, 1000);
+        }
+    }
+    class BeepBoop implements Runnable {
+        @Override
+        public void run() {
+            r.generator.startTone(ToneGenerator.TONE_PROP_BEEP);
+        }
+    }
     class RunThread implements Runnable {
         File f = null;
         Writer out = null;

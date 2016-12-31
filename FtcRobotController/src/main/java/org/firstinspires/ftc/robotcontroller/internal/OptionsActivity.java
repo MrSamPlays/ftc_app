@@ -2,6 +2,8 @@ package org.firstinspires.ftc.robotcontroller.internal;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -27,8 +29,16 @@ public class OptionsActivity extends Activity {
     private RadioButton allianceChoice;
     private String alliance;
     private Button submit;
+    private Button cancel;
     private EditText delay;
     private double delayInterval;
+    Intent intent;
+    private View.OnClickListener cancelClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(intent);
+        }
+    };
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -63,6 +73,7 @@ public class OptionsActivity extends Activity {
                     }
                 }
             }
+            startActivity(intent);
         }
     };
 
@@ -72,9 +83,15 @@ public class OptionsActivity extends Activity {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onCreate(savedInstanceState, persistentState);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         setContentView(R.layout.activity_options);
+        intent = new Intent(this, FtcRobotControllerActivity.class);
         try {
             in = new FileInputStream("config.properties");
             prop.load(in);
@@ -110,6 +127,9 @@ public class OptionsActivity extends Activity {
         allianceRadioGroup = (RadioGroup) findViewById(R.id.allianceChoice);
         delay = (EditText) findViewById(R.id.delay);
         submit = (Button) findViewById(R.id.submit);
+        cancel = (Button) findViewById(R.id.cancel);
         submit.setOnClickListener(onClickListener);
+        cancel.setOnClickListener(cancelClickListener);
+
     }
 }

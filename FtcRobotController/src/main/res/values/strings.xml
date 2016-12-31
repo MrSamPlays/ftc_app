@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="app_name">11389 App of Technical Difficulties</string>
 
     <!-- Menu -->
-    <string name="inspection_mode_menu_item">Self Inspect</string>
+    <string name="inspection_mode_menu_item">Click to pass inspection</string>
     <string name="programming_mode_menu_item">Scratch, but Worse</string>
     <string name="blocks_menu_item">Scratch Ripoff</string>
     <string name="settings_menu_item">Things to Change (Usually the problem/solution)</string>

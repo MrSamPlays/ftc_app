@@ -47,6 +47,7 @@ import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.sensors.ColorSensor;
 
 @Autonomous(name = "General Automaticness", group = "Nathan's Deprecated Test Routines")
+@Deprecated
 public class AutoOpGeneral extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -73,7 +74,6 @@ public class AutoOpGeneral extends LinearOpMode {
         centerVortex = ImageReader.loadImage(R.drawable.center_vortex, 36, 36);
         cornerVortex = ImageReader.loadImage(R.drawable.corner_vortex, 36, 36);
 
-        Robot.initialize(hardwareMap);
 
         /* eg: Initialize the hardware variables. Note that the strings used here as parameters
          * to 'get' must correspond to the names assigned during the robot configuration
@@ -110,7 +110,6 @@ public class AutoOpGeneral extends LinearOpMode {
     }
 
     public void runNav() throws InterruptedException {
-        Robot.drive.setAllMotorSpeed(100);
 
         // EventDoer foundLine = navigator.findColor(bottomSensor, new float[]{150, 0, 0}, 75);
 

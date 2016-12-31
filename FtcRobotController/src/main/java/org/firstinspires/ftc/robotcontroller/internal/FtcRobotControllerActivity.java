@@ -266,6 +266,7 @@ public class FtcRobotControllerActivity extends Activity {
         bindToService();
 
         GetResourcesMiddleman.setResources(getResources());
+        createNotification("If you are reading this...", "Did you remember to set the alliance colour?");
     }
 
     protected UpdateUI createUpdateUI() {
@@ -285,7 +286,7 @@ public class FtcRobotControllerActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        createNotification("If you are reading this...", "Did you remember to set the alliance colour?");
+
         RobotLog.vv(TAG, "onStart()");
 
         // Undo the effects of shutdownRobot() that we might have done in onStop()
