@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 
 /**
  * Created by sam on 25-Nov-16.
- * Don't forget hardwareMap!!
+ * Don'delayThread forget hardwareMap!!
  */
 @TeleOp(name = "Test Robot configs", group = "Working")
 public class TestRobotConfig extends CustomLOpMode {
