@@ -133,45 +133,72 @@ public class TestBeaconRoutine extends CustomLOpMode {
     private void findLine() {
         // TODO finish adding line finder
 
-        // Store if we have found the beacon yet.
+        // Store if we have found the line yet.
         boolean lineFound = false;
 
         // Continue until the line is found.
         while (!lineFound) {
 
             // Move forward for 600 milliseconds
-            // change the first parameter to check at this interval, lower number means increased checking interval
+            // Change the first parameter to change the checking interval, lower number means increased checking interval
             robot.moveStraight(600, MOTOR_MOVE_CONSTANT);
+
+            // If we are not looking at a black surface (mat counts as black) then it's the line.
             if (robot.colorSensorL.argb() != 0 || robot.colorSensorR.argb() != 0) {
                 lineFound = true;
             }
+
+            // If we didn't find the line, and there isn't a wall in the way, keep on going.
             if (robot.distanceSensor.getLightDetected() > 0.01 && !lineFound) {
-                // we did not find the line
                 robot.moveStraight(-1200, MOTOR_MOVE_CONSTANT);
             }
         }
+
+        // Stop the robot.
         robot.moveStraight(0, 0);
     }
+
+    /**
+     * This method will follow a line.
+     *
+     * @throws InterruptedException
+     */
     private void followLine() throws InterruptedException {
         // TODO add line following routine
+
+        // Reset distance traveled.
         robot.resetEncoders();
+
+        // Do this while there is no wall in the way.
         while (robot.distanceSensor.getLightDetected() < 0.1 && opModeIsActive()) {
+
+            // If we see a darker colored area...
             if (robot.colorSensorL.argb() > 0x3030304 && robot.colorSensorR.argb() == 0x00) {
+
+                // If we're not facing the right way, face the right way.
                 if (robot.gyro.getHeading() > 10 && robot.gyro.getHeading() < 90) {
                     robot.L.setPower(0);
                     robot.R.setPower(MOTOR_MOVE_CONSTANT);
                     robot.BL.setPower(0);
                     robot.BR.setPower(MOTOR_MOVE_CONSTANT);
+
+                    // Check when we are facing the right way.
                     while (robot.gyro.getHeading() > 0 && robot.gyro.getHeading() < 90) {
                         telemetry.update();
                         idle();
                     }
+
+                    // Now we are facing in the right direction.
                     continue;
                 }
+
+                // Turn the other way.
                 robot.L.setPower(MOTOR_MOVE_CONSTANT);
                 robot.R.setPower(0);
                 robot.BL.setPower(MOTOR_MOVE_CONSTANT);
                 robot.BR.setPower(0);
+
+                // If we see a lighter colored area...
             } else if (robot.colorSensorL.argb() == 0x00 && robot.colorSensorR.argb() > 0x3030304) {
                 if (robot.gyro.getHeading() < 350 && robot.gyro.getHeading() > 270) {
                     robot.L.setPower(MOTOR_MOVE_CONSTANT);
