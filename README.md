@@ -1,4 +1,6 @@
 <h1>Changelog:</h1>
+<p>2.2.1.0</p>
+Fixes in beacon routine
 <p>2.1.0.0 </p>
 Now Runs beacon routine
 <p>2.0.0.1</p>
