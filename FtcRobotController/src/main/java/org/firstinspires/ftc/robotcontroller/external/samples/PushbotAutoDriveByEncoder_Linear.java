@@ -118,15 +118,15 @@ public class PushbotAutoDriveByEncoder_Linear extends LinearOpMode {
 
         robot.leftClaw.setPosition(1.0);            // S4: Stop and close the claw.
         robot.rightClaw.setPosition(0.0);
-        sleep(1000);     // pause for servos to move
+        sleep(1000);     // pause for servos to moveStraight
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
 
     /*
-     *  Method to perfmorm a relative move, based on encoder counts.
-     *  Encoders are not reset as the move is based on the current position.
+     *  Method to perfmorm a relative moveStraight, based on encoder counts.
+     *  Encoders are not reset as the moveStraight is based on the current position.
      *  Move will stop if any of three conditions occur:
      *  1) Move gets to the desired position
      *  2) Move runs out of time
@@ -180,7 +180,7 @@ public class PushbotAutoDriveByEncoder_Linear extends LinearOpMode {
             robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            //  sleep(250);   // optional pause after each move
+            //  sleep(250);   // optional pause after each moveStraight
         }
     }
 }

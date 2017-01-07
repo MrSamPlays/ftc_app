@@ -127,7 +127,7 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // Wait for the game to start (Display Gyro value), and reset gyro before we move..
+        // Wait for the game to start (Display Gyro value), and reset gyro before we moveStraight..
         while (!isStarted()) {
             telemetry.addData(">", "Robot Heading = %d", gyro.getIntegratedZValue());
             telemetry.update();
@@ -160,7 +160,7 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
     *  2) Driver stops the opmode running.
     *
     * @param speed      Target speed for forward motion.  Should allow for _/- variance for adjusting heading
-    * @param distance   Distance (in inches) to move from current position.  Negative distance means move backwards.
+    * @param distance   Distance (in inches) to moveStraight from current position.  Negative distance means moveStraight backwards.
     * @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
     *                   If a relative angle is required, add/subtract from current heading.

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.robotcontroller.internal;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PersistableBundle;
 import android.view.Menu;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.qualcomm.ftcrobotcontroller.R;
 
 import org.firstinspires.ftc.robotcore.internal.AppUtil;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -26,13 +28,14 @@ public class OptionsActivity extends Activity {
     private OutputStream out = null;
     private InputStream in = null;
     private RadioGroup allianceRadioGroup;
+    private File configfile;
     private RadioButton allianceChoice;
     private String alliance;
     private Button submit;
     private Button cancel;
     private EditText delay;
     private double delayInterval;
-    Intent intent;
+    private Intent intent;
     private View.OnClickListener cancelClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -59,7 +62,7 @@ public class OptionsActivity extends Activity {
                 AppUtil.getInstance().showToast("Successfully set Alliance to blue");
             }
             try {
-                out = new FileOutputStream("config.properties");
+                out = new FileOutputStream(configfile);
                 prop.setProperty("AllianceChoice", alliance);
                 prop.setProperty("delay", Double.toString(delayInterval));
             } catch (Exception e) {
@@ -85,6 +88,7 @@ public class OptionsActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
+        configfile = new File(Environment.getDataDirectory(), "config.properties");
     }
 
     @Override
@@ -93,7 +97,7 @@ public class OptionsActivity extends Activity {
         setContentView(R.layout.activity_options);
         intent = new Intent(this, FtcRobotControllerActivity.class);
         try {
-            in = new FileInputStream("config.properties");
+            in = new FileInputStream(configfile);
             prop.load(in);
             alliance = prop.getProperty("AllianceChoice");
             delay.setText(prop.getProperty("delay"));

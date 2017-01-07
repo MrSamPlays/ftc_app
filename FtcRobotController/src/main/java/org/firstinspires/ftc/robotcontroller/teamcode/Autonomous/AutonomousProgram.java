@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.robotcontroller.teamcode.testzone;
+package org.firstinspires.ftc.robotcontroller.teamcode.Autonomous;
 
 import android.media.ToneGenerator;
 import android.os.Environment;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
@@ -18,13 +19,16 @@ import java.util.Locale;
  * Created by sam on 20-Dec-16.
  * Its working I guess
  */
-@Autonomous(name = "Beacon", group = "sorta working")
-public class TestBeaconRoutine extends CustomLOpMode {
-    final double MOTOR_MOVE_CONSTANT = 0.5;
+@Autonomous(name = "Autonomous", group = "sorta working")
+public class AutonomousProgram extends CustomLOpMode {
+    final double MOTOR_MOVE_CONSTANT = 0.35;
     final int MOTOR_ENCODER_360_SPIN = 5106;
+    int relposL = 0;
+    int relposR = 0;
     Robot r = new Robot();
     Thread t = null;
-
+    Thread beep = new Thread(new BeepBoop());
+    Thread boop = new Thread(new BoopBeep());
     @Override
     public void runOpMode() throws Throwable {
         r.initializeRobot(hardwareMap);
@@ -38,12 +42,14 @@ public class TestBeaconRoutine extends CustomLOpMode {
         if (t != null) { // Debug code do not remove!!
             t.start();
         }
-        KnockBallDown();
-        findLine();
-        followLine();
-        findBeacon();
         while (opModeIsActive()) {
+            KnockBallDown();
+            findLine();
+            // followLine();
+            findBeacon();
+            goToSecondBeacon();
             idle();
+            break;
         }
     }
 
@@ -58,61 +64,73 @@ public class TestBeaconRoutine extends CustomLOpMode {
 
     private void KnockBallDown() throws InterruptedException {
         r.resetEncoders();
-
-        while (r.L.getCurrentPosition() < 3200 && opModeIsActive()) {
+        while (r.L.getCurrentPosition() < 3800 && opModeIsActive()) {
             r.L.setPower(1);
             r.R.setPower(1);
             r.BL.setPower(1);
             r.BR.setPower(1);
             idle();
         }
+        r.haltMotors();
+        sleep(100);
+        r.resetEncoders();
+        sleep(200);
+        r.generator.startTone(ToneGenerator.TONE_CDMA_NETWORK_BUSY_ONE_SHOT, 200);
         if (GetAllianceMiddleman.isRed()) {
             // Turn left
-            while (((r.gyro.getHeading() >= 270 || r.gyro.getHeading() < 90) || r.L.getCurrentPosition() >= -MOTOR_ENCODER_360_SPIN/4) && opModeIsActive()) {
-                r.L.setPower(-MOTOR_MOVE_CONSTANT);
+            r.R.setTargetPosition((MOTOR_ENCODER_360_SPIN/4) + relposR);
+            while (r.gyroIsWorking ? (r.gyro.getHeading() >= 270 || r.gyro.getHeading() <= 90) : r.R.getCurrentPosition() <= (MOTOR_ENCODER_360_SPIN/4) + relposR && !r.R.isBusy() && opModeIsActive()) {
+                r.L.setPower(0);
                 r.R.setPower(MOTOR_MOVE_CONSTANT);
-                r.BL.setPower(-MOTOR_MOVE_CONSTANT);
+                r.BL.setPower(0);
                 r.BR.setPower(MOTOR_MOVE_CONSTANT);
                 idle();
             }
             r.haltMotors();
         } else {
             // Turn Right
-            while ((r.gyro.getHeading() <= 90 || r.gyro.getHeading() >= 270) || r.L.getCurrentPosition() <= MOTOR_ENCODER_360_SPIN/4) {
+            r.L.setTargetPosition((MOTOR_ENCODER_360_SPIN/4) + relposL);
+            while ((r.gyroIsWorking ? (r.gyro.getHeading() <= 90 || r.gyro.getHeading() >= 270) : (r.L.getCurrentPosition() <= (MOTOR_ENCODER_360_SPIN/4) + relposL && !r.L.isBusy()))) {
                 r.L.setPower(MOTOR_MOVE_CONSTANT);
                 r.R.setPower(0);
                 r.BL.setPower(MOTOR_MOVE_CONSTANT);
                 r.BR.setPower(0);
                 idle();
             }
+            r.haltMotors();
         }
+        sleep(100);
         r.resetEncoders();
         while (r.L.getCurrentPosition() > -1100) {
             r.L.setPower(-1);
             r.R.setPower(-1);
             r.BL.setPower(-1);
             r.BR.setPower(-1);
+            idle();
         }
+        RobotLog.i("Hello robot");
+        r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_INTERGROUP);
+        r.haltMotors();
     }
-    private void findLine() {
+    private void findLine() throws InterruptedException {
         // TODO finish adding line finder
         boolean linefound = false;
         while (!linefound) {
             // change the first parameter to check at this interval, lower number means increased checking interval thus increasing robot stutter movement
-            r.moveStraight(600, MOTOR_MOVE_CONSTANT);
+            r.moveForward(600, MOTOR_MOVE_CONSTANT);
             if (r.colorSensorL.argb() != 0 || r.colorSensorR.argb() != 0) {
                 linefound = true;
             }
             if (r.distanceSensor.getLightDetected() > 0.01 && !linefound) {
                 // we did not find the line back up and do something else
-                r.moveStraight(-1200, MOTOR_MOVE_CONSTANT);
+                r.moveBackward(1200, MOTOR_MOVE_CONSTANT);
             }
+            idle();
         }
-        // Stop robot // STOPSHIP: 28-Dec-16
-        r.moveStraight(0, 0);
+        r.haltMotors();
     }
+    /*
     private void followLine() throws InterruptedException {
-        // TODO add line following routine
         r.resetEncoders();
         while (r.distanceSensor.getLightDetected() < 0.05 && opModeIsActive()) {
             if (r.colorSensorL.argb() > 0x3030304 && r.colorSensorR.argb() == 0x00) {
@@ -159,11 +177,21 @@ public class TestBeaconRoutine extends CustomLOpMode {
         r.R.setPower(0);
         r.BL.setPower(0);
         r.BR.setPower(0);
+        sleep(400);
+        r.generator.startTone(ToneGenerator.TONE_CDMA_HIGH_SS_2);
         idle();
-    }
+    }*/
 
     private void findBeacon() throws InterruptedException {
         //TODO add some code to get to the beacon
+        while (r.distanceSensor.getLightDetected() < 0.02) {
+            // we need to move toward the beacon
+            r.L.setPower(MOTOR_MOVE_CONSTANT);
+            r.R.setPower(MOTOR_MOVE_CONSTANT);
+            r.BL.setPower(MOTOR_MOVE_CONSTANT);
+            r.BR.setPower(MOTOR_MOVE_CONSTANT);
+        }
+        r.haltMotors();
         boolean isRed = r.beaconFinder.red() > 0;
         boolean isBlue = r.beaconFinder.blue() > 0;
         if (r.isRedAlliance()) {
@@ -171,18 +199,39 @@ public class TestBeaconRoutine extends CustomLOpMode {
                 // move on to next beacon
             } else {
                 // hit it again and then move on
-                r.moveStraight(-500, 1);
+                r.moveBackward(250, 1);
+                r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_PING_RING);
                 sleep(5000);
-                r.moveStraight(500, 0.5);
+                r.moveForward(250, 0.5);
             }
         } else {
             if (isBlue) {
                 // move on to the next beacon
             } else {
                 // hit it again then move on
-                r.moveStraight(-500, 1);
+                r.moveBackward(250, 1);
+                r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_PING_RING);
                 sleep(5000);
-                r.moveStraight(500, 0.5);
+                r.moveForward(250, 0.5);
+            }
+        }
+    }
+    private void goToSecondBeacon() throws InterruptedException {
+        r.resetEncoders();
+        r.moveBackward(600, 1);
+        if (r.isRedAlliance()) {
+            while(r.gyroIsWorking ? (r.gyro.getHeading() > 270 || r.gyro.getHeading() < 90) : r.L.getCurrentPosition() < MOTOR_ENCODER_360_SPIN/4) {
+                r.L.setPower(MOTOR_MOVE_CONSTANT);
+                r.R.setPower(0);
+                r.BL.setPower(MOTOR_MOVE_CONSTANT);
+                r.BR.setPower(0);
+            }
+        } else {
+            while(r.gyroIsWorking ? (r.gyro.getHeading() > 270 || r.gyro.getHeading() < 90) : r.R.getCurrentPosition() < MOTOR_ENCODER_360_SPIN/4) {
+                r.L.setPower(0);
+                r.R.setPower(MOTOR_MOVE_CONSTANT);
+                r.BL.setPower(0);
+                r.BR.setPower(MOTOR_MOVE_CONSTANT);
             }
         }
     }
@@ -230,7 +279,8 @@ public class TestBeaconRoutine extends CustomLOpMode {
                 telemetry.addData("Optical distance reading raw", r.distanceSensor.getRawLightDetected());
                 telemetry.addData("Gyro", r.gyro.getHeading());
                 telemetry.addData("Alliance color", (GetAllianceMiddleman.isRed() ? "Red" : "Blue"));
-                telemetry.addData("Encoders", r.L.getCurrentPosition());
+                telemetry.addData("Encoder L", r.L.getCurrentPosition());
+                telemetry.addData("Encoder R", r.L.getCurrentPosition());
                 telemetry.update();
                 if (isStopRequested()) {
                     break;

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.robotcontroller.teamcode.libs.robot;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 
+import com.qualcomm.ftccommon.FtcRobotControllerService;
+import com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
@@ -19,14 +21,7 @@ import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
-
-
-import org.firstinspires.ftc.robotcontroller.teamcode.libs.motors.DriveSetHandler;
-import org.firstinspires.ftc.robotcontroller.teamcode.libs.motors.MotorHandler;
-import org.firstinspires.ftc.robotcontroller.teamcode.libs.motors.MotorSet;
-import org.firstinspires.ftc.robotcontroller.teamcode.libs.motors.MotorSetType;
-
-import java.util.HashMap;
+import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
 
 /**
  * <p>
@@ -39,7 +34,7 @@ import java.util.HashMap;
  * Blue: do not shift.<br>
  * </p>
  */
-public class Robot {
+public class Robot extends CustomLOpMode {
     public DcMotor L;
     public DcMotor R;
     public DcMotor BL;
@@ -57,13 +52,15 @@ public class Robot {
     public CRServo mtrsrv;
     public OpticalDistanceSensor distanceSensor;
     public ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-    ElapsedTime period = new ElapsedTime();
+    private ElapsedTime period = new ElapsedTime();
     private HardwareMap hwmap;
     // private boolean initialized = false;
+    public boolean gyroIsWorking = true;
     private float x = 0;
     private float y = 0;
     private double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)); //The magnitude of the robot from the origin
     private boolean redAlliance;
+    private ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
     /**
      * <code>Robot()</code> does not automatically initialize robot call <code>initializeRobot()</code> to initialize
@@ -78,15 +75,15 @@ public class Robot {
      *
      * @param map - the <code>HardwareMap</code> to use
      */
-    public Robot(HardwareMap map) {
+    public Robot(HardwareMap map) throws Throwable {
         initializeRobot(map);
     }
 
-    public void initializeRobot(HardwareMap aHwMap) {
+    public void initializeRobot(HardwareMap aHwMap) throws Throwable {
         hwmap = aHwMap;
         Front = hwmap.dcMotorController.get("Front");
         Back = hwmap.dcMotorController.get("Back");
-        // Lift = hwmap.dcMotorController.get("Lift");
+        Lift = hwmap.dcMotorController.get("Lift");
         cdim = hwmap.deviceInterfaceModule.get("cdim");
         L = hwmap.dcMotor.get("frontLeft");
         // L = new DcMotorImpl(Front, 1, DcMotor.Direction.REVERSE);
@@ -97,7 +94,8 @@ public class Robot {
         // BR = new DcMotorImpl(Back, 2);
         BR = hwmap.dcMotor.get("backRight");
         // Winch = new DcMotorImpl(Lift, 1);
-        // servctrl = hwmap.servoController.get("Servo Controller 1");
+        Winch = hwmap.dcMotor.get("Winch");
+        servctrl = hwmap.servoController.get("Servos");
         // mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
 
         // colorSensorL = hwmap.colorSensor.get("colorSensorL");
@@ -124,9 +122,17 @@ public class Robot {
         R.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        timer.reset();
         gyro.calibrate();
         while (gyro.isCalibrating()) {
-            generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 100);
+            generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 1000);
+            if (timer.seconds() > 5) {
+                generator.startTone(ToneGenerator.TONE_SUP_ERROR, 1000);
+                gyroIsWorking = false;
+                // Warn the user that the gyro sensor calibration is taking longer than usual
+                break;
+            }
+            idle();
         }
     }
 
@@ -160,11 +166,8 @@ public class Robot {
         BL.setPower(0);
         BR.setPower(0);
     }
+
     public void haltMotors(boolean coast) {
-        L.setPower(0);
-        R.setPower(0);
-        BL.setPower(0);
-        BR.setPower(0);
         if (!coast) {
             L.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             R.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -176,19 +179,25 @@ public class Robot {
             BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         }
+        L.setPower(0);
+        R.setPower(0);
+        BL.setPower(0);
+        BR.setPower(0);
     }
-
-    public void resetEncoders() {
-        while (BL.getCurrentPosition() != 0 && BR.getCurrentPosition() != 0 && L.getCurrentPosition() != 0 && R.getCurrentPosition() != 0) {
+    public void resetEncoders() throws InterruptedException {
+        do {
             BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            generator.startTone(ToneGenerator.TONE_CDMA_HIGH_S_X4, 200);
             BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
+            idle();
+
+        } while (BL.getCurrentPosition() != 0 || BR.getCurrentPosition() != 0 || L.getCurrentPosition() != 0 || R.getCurrentPosition() != 0);
     }
 
     public void waitForTick(long periodMs) throws InterruptedException {
@@ -208,21 +217,38 @@ public class Robot {
         return color;
     }
 
-    public void moveStraight(int distance, double power) {
+    public void moveForward(int distance, double power) throws InterruptedException {
         resetEncoders();
         if (distance < 0 || power < 0) {
-            while (L.getCurrentPosition() > -Math.abs(distance)) {
-                L.setPower(-Math.abs(power));
-                R.setPower(-Math.abs(power));
-                BL.setPower(-Math.abs(power));
-                BR.setPower(-Math.abs(power));
-            }
+            System.err.println("you are such a bad person");
+            throw new IllegalArgumentException();
         } else {
             while (L.getCurrentPosition() < distance) {
                 L.setPower(power);
                 R.setPower(power);
                 BL.setPower(power);
                 BR.setPower(power);
+            }
+        }
+    }
+
+    public void moveStraight(double power) {
+        L.setPower(power);
+        R.setPower(power);
+        BL.setPower(power);
+        BR.setPower(power);
+    }
+    public void moveBackward(int distance, double power) throws InterruptedException {
+        resetEncoders();
+        if (distance < 0 || power < 0) {
+            System.err.println("you are such a bad person");
+            throw new IllegalArgumentException();
+        } else {
+            while (L.getCurrentPosition() > -distance) {
+                L.setPower(-power);
+                R.setPower(-power);
+                BL.setPower(-power);
+                BR.setPower(-power);
             }
         }
     }

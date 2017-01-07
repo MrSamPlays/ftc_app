@@ -30,34 +30,57 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.robotcontroller.testcode;
+package org.firstinspires.ftc.robotcontroller.internal.testcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * A simple test of a continuous rotation servo
+ * A simple test of a pair of motors
  */
-@Autonomous(name="Test CR Servo", group ="Tests")
+@Autonomous(name="Test Two Motors", group ="Tests")
 @Disabled
-public class TestCRServo extends LinearOpMode
+public class TestDriveLinear extends LinearOpMode
     {
+    DcMotor motorLeft;
+    DcMotor motorRight;
+
     @Override
     public void runOpMode() throws InterruptedException
         {
-        CRServo servo = this.hardwareMap.crservo.get("crservo");
+        motorLeft = this.hardwareMap.dcMotor.get("motorLeft");
+        motorRight = this.hardwareMap.dcMotor.get("motorRight");
+
+        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
+        runMotorsBothDirections(1.0);
 
-        servo.setPower(1.0);
-        Thread.sleep(4000);
+        Thread.sleep(500);
+        runMotorsBothDirections(0.1);
 
-        servo.setPower(0.0);
-        Thread.sleep(1000);
+        Thread.sleep(500);
+        runMotorsBothDirections(1.0);
+        }
 
-        servo.setPower(-1.0);
-        Thread.sleep(4000);
+    void runMotorsBothDirections(double power) throws InterruptedException
+        {
+        motorLeft.setPower(-power);
+        motorRight.setPower(power);
+
+        Thread.sleep(2000);
+        motorLeft.setPower(0);
+        motorRight.setPower(0);
+
+        Thread.sleep(500);
+        motorLeft.setPower(power);
+        motorRight.setPower(-power);
+
+        Thread.sleep(2000);
+        motorLeft.setPower(0);
+        motorRight.setPower(0);
         }
     }

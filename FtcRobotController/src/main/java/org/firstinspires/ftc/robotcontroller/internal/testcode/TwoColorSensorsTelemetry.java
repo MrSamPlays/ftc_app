@@ -30,24 +30,51 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.robotcontroller.testcode;
+package org.firstinspires.ftc.robotcontroller.internal.testcode;
 
+import android.graphics.Color;
+
+import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
- * {@link TestOpModeException} is an opmode that simply throws an exception when started
+ * A simple test of a pair of color sensors
  */
-@Autonomous(name = "Test OpMode Exception", group = "Tests")
+@Autonomous(name="Test Two Color Sensors", group ="Tests")
 @Disabled
-public class TestOpModeException extends LinearOpMode
+public class TwoColorSensorsTelemetry extends LinearOpMode
     {
-    @Override public void runOpMode() throws InterruptedException
+    AMSColorSensor leftColorSensor;
+    AMSColorSensor rightColorSensor;
+
+    @Override
+    public void runOpMode() throws InterruptedException
         {
+        leftColorSensor  = (AMSColorSensor)hardwareMap.colorSensor.get("leftColorSensor");
+        rightColorSensor = (AMSColorSensor)hardwareMap.colorSensor.get("rightColorSensor");
+
+        AMSColorSensor.Parameters params = leftColorSensor.getParameters();
+        // possibly change some (notably gain and / or integration time), then
+        // leftColorSensor.initialize(params);
+
+        params = rightColorSensor.getParameters();
+        // possibly change some (notably gain and / or integration time), then
+        // rightColorSensor.initialize(params);
+
         waitForStart();
 
-        Thread.sleep(5000);
-        throw new RuntimeException("this is a runtime exception");
+        while (opModeIsActive())
+            {
+            int left = leftColorSensor.argb();
+            int right = rightColorSensor.argb();
+            telemetry.addData("left", String.format("a=%d r=%d g=%d b=%d", Color.alpha(left), Color.red(left), Color.green(left), Color.blue(left)));
+            telemetry.addData("right", String.format("a=%d r=%d g=%d b=%d", Color.alpha(right), Color.red(right), Color.green(right), Color.blue(right)));
+            this.updateTelemetry(telemetry);
+
+            Thread.sleep(500);
+            }
+
         }
     }

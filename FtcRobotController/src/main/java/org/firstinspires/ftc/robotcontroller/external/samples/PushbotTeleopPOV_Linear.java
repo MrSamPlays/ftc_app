@@ -63,7 +63,7 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
     HardwarePushbot robot           = new HardwarePushbot();   // Use a Pushbot's hardware
                                                                // could also use HardwarePushbotMatrix class.
     double          clawOffset      = 0;                       // Servo mid position
-    final double    CLAW_SPEED      = 0.02 ;                   // sets rate to move servo
+    final double    CLAW_SPEED      = 0.02 ;                   // sets rate to moveStraight servo
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -113,7 +113,7 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
             robot.leftClaw.setPosition(HardwarePushbot.MID_SERVO + clawOffset);
             robot.rightClaw.setPosition(HardwarePushbot.MID_SERVO - clawOffset);
 
-            // Use gamepad buttons to move arm up (Y) and down (A)
+            // Use gamepad buttons to moveStraight arm up (Y) and down (A)
             if (gamepad1.y)
                 robot.armMotor.setPower(HardwarePushbot.ARM_UP_POWER);
             else if (gamepad1.a)

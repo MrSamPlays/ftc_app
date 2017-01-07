@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.robotcontroller.testcode;
+package org.firstinspires.ftc.robotcontroller.internal.testcode;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -195,7 +195,7 @@ public class CalibrateColorSensor extends OpMode implements I2cPortReadyCallback
                 controller_mode = I2CMode.RESET;
                 break;
 
-            // During reset, we move back to read mode.
+            // During reset, we moveStraight back to read mode.
             case RESET:
                 controller.enableI2cReadMode(port, I2cAddr.create8bit(COLOR_SENSOR_ADDR), 0x03, 6);
                 controller.writeI2cCacheToController(port);

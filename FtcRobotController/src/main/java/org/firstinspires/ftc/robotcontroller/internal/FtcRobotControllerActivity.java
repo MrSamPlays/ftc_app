@@ -73,6 +73,7 @@ import com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity;
 import com.qualcomm.ftccommon.LaunchActivityConstantsList;
 import com.qualcomm.ftccommon.ProgrammingModeController;
 import com.qualcomm.ftccommon.Restarter;
+
 import com.qualcomm.ftccommon.UpdateUI;
 import com.qualcomm.ftccommon.configuration.EditParameters;
 import com.qualcomm.ftccommon.configuration.FtcLoadFileActivity;
@@ -80,7 +81,6 @@ import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.hardware.HardwareFactory;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.hardware.configuration.Utility;
 import com.qualcomm.robotcore.robocol.PeerAppRobotController;
@@ -111,25 +111,22 @@ public class FtcRobotControllerActivity extends Activity {
     protected RobotConfigFileManager cfgFileMgr;
 
     protected ProgrammingModeController programmingModeController;
-    NotificationManager notificationManager;
     protected UpdateUI.Callback callback;
     protected Context context;
     protected Utility utility;
     protected AppUtil appUtil = AppUtil.getInstance();
-
     protected ImageButton buttonMenu;
     protected TextView textDeviceName;
     protected TextView textNetworkConnectionStatus;
     protected TextView textRobotStatus;
     protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
     protected TextView textOpMode;
+    protected TextView textAllianceColour;
     protected TextView textErrorMessage;
     protected ImmersiveMode immersion;
-
     protected UpdateUI updateUI;
     protected Dimmer dimmer;
     protected LinearLayout entireScreenLayout;
-
     protected FtcRobotControllerService controllerService;
     protected NetworkType networkType;
     protected FtcEventLoop eventLoop;
@@ -147,6 +144,7 @@ public class FtcRobotControllerActivity extends Activity {
             controllerService = null;
         }
     };
+    NotificationManager notificationManager;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -181,6 +179,7 @@ public class FtcRobotControllerActivity extends Activity {
             }
         }
     }
+
     public void createNotification(String title, String text) {
         Notification.Builder builder = new Notification.Builder(this);
         builder.setSmallIcon(R.drawable.ic_launcher);
@@ -196,6 +195,7 @@ public class FtcRobotControllerActivity extends Activity {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, notification);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -236,6 +236,7 @@ public class FtcRobotControllerActivity extends Activity {
         textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
         textOpMode = (TextView) findViewById(R.id.textOpMode);
         textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
+        textAllianceColour = (TextView) findViewById(R.id.textAllianceColour);
         textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
         textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
         immersion = new ImmersiveMode(getWindow().getDecorView());
@@ -244,7 +245,6 @@ public class FtcRobotControllerActivity extends Activity {
 
         programmingModeController = new ProgrammingModeControllerImpl(
                 this, (TextView) findViewById(R.id.textRemoteProgrammingMode));
-
         updateUI = createUpdateUI();
         callback = createUICallback(updateUI);
 
@@ -274,6 +274,7 @@ public class FtcRobotControllerActivity extends Activity {
         UpdateUI result = new UpdateUI(this, dimmer);
         result.setRestarter(restarter);
         result.setTextViews(textNetworkConnectionStatus, textRobotStatus, textGamepad, textOpMode, textErrorMessage, textDeviceName);
+
         return result;
     }
 
@@ -291,7 +292,7 @@ public class FtcRobotControllerActivity extends Activity {
 
         // Undo the effects of shutdownRobot() that we might have done in onStop()
         updateUIAndRequestRobotSetup();
-
+        textAllianceColour.setText(String.format("Current Alliance Colour: %s", GetAllianceMiddleman.isRed() ? "red" : "blue"));
         cfgFileMgr.getActiveConfigAndUpdateUI();
 
         entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
@@ -303,6 +304,7 @@ public class FtcRobotControllerActivity extends Activity {
         });
         AppUtil.getInstance().showToast(context, context.getString(R.string.toastMOTD));
         AppUtil.getInstance().showToast(context, context.getString(R.string.toastMessage));
+        AppUtil.getInstance().showToast(context, "Current Alliance:" + (GetAllianceMiddleman.isRed() ? "Red" : "Blue"));
 
     }
 
@@ -456,7 +458,7 @@ public class FtcRobotControllerActivity extends Activity {
                 e.printStackTrace();
             }
             AppUtil.getInstance().showToast(context, context.getString(R.string.toastMessage));
-        }else if (id == R.id.action_sss) {
+        } else if (id == R.id.action_sss) {
             Intent options = new Intent(this, OptionsActivity.class);
             startActivity(options);
         } else if (id == R.id.action_exit_app) {

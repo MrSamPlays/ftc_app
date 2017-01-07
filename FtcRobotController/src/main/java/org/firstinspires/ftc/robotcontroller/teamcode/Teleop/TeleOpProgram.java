@@ -1,28 +1,35 @@
-package org.firstinspires.ftc.robotcontroller.teamcode.testzone;
+package org.firstinspires.ftc.robotcontroller.teamcode.Teleop;
 
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.support.annotation.MainThread;
 
+import com.qualcomm.ftccommon.SoundPlayer;
+import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
+import org.firstinspires.ftc.robotcontroller.teamcode.Working;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
+import org.firstinspires.ftc.robotcore.internal.AppUtil;
 
 /**
  * Created by sam on 25-Nov-16.
  * Don't forget hardwareMap!!
  */
-@TeleOp(name = "Test Robot configs", group = "Working")
-public class TestRobotConfig extends CustomLOpMode {
+@TeleOp(name = "Tele Op Program", group = "Working")
+@Working
+@MainThread
+public class TeleOpProgram extends CustomLOpMode {
     ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+
     Robot r = new Robot();
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                if ((!(r.BL.getPower() < -0.01) && r.BR.getPower() < -0.01) || (r.BL.getPower() < -0.01 && !(r.BR.getPower() < -0.01))) {
+                if ((r.BL.getPower() < -0.01 ^ r.BR.getPower() < -0.01) || (r.BL.getPower() < -0.01 && r.BR.getPower() < -0.01)) {
                     generator.startTone(ToneGenerator.TONE_CDMA_MED_L, 500);
                     try {
                         Thread.sleep(500);
@@ -54,8 +61,16 @@ public class TestRobotConfig extends CustomLOpMode {
             }
         }
     };
+    Runnable wincher = new Runnable() {
+        @Override
+        public void run() {
+            r.Winch.setPower(gamepad2.left_stick_y);
+        }
+    };
     Thread teleOpL = new Thread(driveL);
     Thread teleOpR = new Thread(driveR);
+    Thread teleOpBM = new Thread(new BMer());
+    Thread teleOpLifter = new Thread(wincher);
 
     @Override
     @MainThread
@@ -65,6 +80,8 @@ public class TestRobotConfig extends CustomLOpMode {
         t.start();
         teleOpL.start();
         teleOpR.start();
+        teleOpBM.start();
+        teleOpLifter.start();
         while (opModeIsActive()) {
             // resetEncoders();
             telemetry.addData("Left Color", Integer.toHexString(r.colorSensorL.argb()));
@@ -85,5 +102,32 @@ public class TestRobotConfig extends CustomLOpMode {
         t = null;
         teleOpL = null;
         teleOpR = null;
+        teleOpBM = null;
+        teleOpLifter = null;
+    }
+
+    class BMer implements Runnable {
+        private boolean done;
+
+        @Override
+        public void run() {
+            while (opModeIsActive()) {
+                if (gamepad2.a) {
+                    try {
+                        r.resetEncoders();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                    /*try {
+                        Thread.sleep(1000);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }*/
+                if (gamepad2.b) {
+                    generator.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);
+                }
+            }
+        }
     }
 }

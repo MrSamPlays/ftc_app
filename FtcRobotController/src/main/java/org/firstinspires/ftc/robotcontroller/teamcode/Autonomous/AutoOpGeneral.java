@@ -37,6 +37,7 @@ import android.graphics.Bitmap;
 
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -48,6 +49,7 @@ import org.firstinspires.ftc.robotcontroller.teamcode.libs.sensors.ColorSensor;
 
 @Autonomous(name = "General Automaticness", group = "Nathan's Deprecated Test Routines")
 @Deprecated
+@Disabled
 public class AutoOpGeneral extends LinearOpMode {
 
     /* Declare OpMode members. */

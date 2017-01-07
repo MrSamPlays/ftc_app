@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwareK9bot;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcore.internal.TelemetryInternal;
 
 import java.util.concurrent.CancellationException;
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 @SuppressWarnings("unused")
-public abstract class CustomLOpMode extends OpMode {
+public class CustomLOpMode extends OpMode {
     //------------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------------
@@ -54,7 +55,9 @@ public abstract class CustomLOpMode extends OpMode {
      *
      * @throws InterruptedException
      */
-    abstract public void runOpMode() throws Throwable;
+    public void runOpMode() throws Throwable {
+        // Do not call super.runOpMode. That's a bad idea.
+    }
 
     /**
      * Pause the Linear Op Mode until start has been pressed
@@ -203,6 +206,11 @@ public abstract class CustomLOpMode extends OpMode {
         return this.isStarted;
     }
 
+
+    public void initializeRobot() throws Throwable {
+
+    }
+
     /**
      * Has the the stopping of the opMode been requested?
      *
@@ -213,13 +221,9 @@ public abstract class CustomLOpMode extends OpMode {
     public final boolean isStopRequested() {
         return this.stopRequested || Thread.currentThread().isInterrupted();
     }
-
     /**
      * From the non-linear OpMode; do not override
      */
-    public void initializeRobot() {
-    }
-
     @Override
     final public void init() {
         this.executorService = ThreadPool.newSingleThreadExecutor();
@@ -229,7 +233,9 @@ public abstract class CustomLOpMode extends OpMode {
 
         this.executorService.execute(helper);
     }
-
+    public void delayProgram() throws InterruptedException {
+        Thread.sleep((long) (Math.floor(GetAllianceMiddleman.getDelay() * 1000)));
+    }
     /**
      * From the non-linear OpMode; do not override
      */

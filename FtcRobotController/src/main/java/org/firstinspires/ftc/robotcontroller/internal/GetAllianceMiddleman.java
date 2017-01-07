@@ -11,6 +11,10 @@ public class GetAllianceMiddleman {
         isRed = isRedAlliance;
     }
 
+    /**
+     *
+     * @return true if Colour is set to red.
+     */
     public static boolean isRed() {
         return isRed;
     }

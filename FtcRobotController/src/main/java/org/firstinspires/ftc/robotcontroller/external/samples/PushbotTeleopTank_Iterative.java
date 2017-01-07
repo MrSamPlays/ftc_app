@@ -63,7 +63,7 @@ public class PushbotTeleopTank_Iterative extends OpMode{
     HardwarePushbot robot       = new HardwarePushbot(); // use the class created to define a Pushbot's hardware
                                                          // could also use HardwarePushbotMatrix class.
     double          clawOffset  = 0.0 ;                  // Servo mid position
-    final double    CLAW_SPEED  = 0.02 ;                 // sets rate to move servo
+    final double    CLAW_SPEED  = 0.02 ;                 // sets rate to moveStraight servo
 
 
     /*
@@ -120,7 +120,7 @@ public class PushbotTeleopTank_Iterative extends OpMode{
         robot.leftClaw.setPosition(HardwarePushbot.MID_SERVO + clawOffset);
         robot.rightClaw.setPosition(HardwarePushbot.MID_SERVO - clawOffset);
 
-        // Use gamepad buttons to move the arm up (Y) and down (A)
+        // Use gamepad buttons to moveStraight the arm up (Y) and down (A)
         if (gamepad1.y)
             robot.armMotor.setPower(HardwarePushbot.ARM_UP_POWER);
         else if (gamepad1.a)
