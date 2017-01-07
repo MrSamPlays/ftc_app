@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.internal.AppUtil;
 
 /**
  * Created by sam on 25-Nov-16.
- * Don't forget hardwareMap!!
+ * Don'delayThread forget hardwareMap!!
  */
 @TeleOp(name = "Tele Op Program", group = "Working")
 @Working
