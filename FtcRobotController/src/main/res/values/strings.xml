@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="app_name">11389 App of Technical Difficulties</string>
 
     <!-- Menu -->
-    <string name="inspection_mode_menu_item">Self Inspect</string>
+    <string name="inspection_mode_menu_item">Click to pass inspection</string>
     <string name="programming_mode_menu_item">Scratch, but Worse</string>
     <string name="blocks_menu_item">Scratch Ripoff</string>
     <string name="settings_menu_item">Things to Change (Usually the problem/solution)</string>
@@ -50,6 +50,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="about_menu_item">About</string>
     <string name="exit_menu_item">Leave (Don\'t)</string>
     <string name="motd_menu_item">MOTD</string>
+    <string name="sss_menu_item">Super Secret Settings (ssh)</string>
+    <string name="notification_blurb">You are ready to compete</string>
 
     <!-- Preferences -->
     <string name="pref_view_logs">View Logs</string>
@@ -60,8 +62,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="toastRestartingRobot">Reviving Robot (2 lives left)</string>
     <string name="toastConfigureRobotBeforeProgrammingMode">You must Configure Robot before starting Scratch, but Worse.</string>
     <string name="toastMOTD">Message of the day:</string>
-    <string name="toastMessage">Whatever I did wrong, I had no idea that I did it</string>
+    <string name="toastMessage">This is Yesterday\'s message of the day</string>
     <!-- ??? -->
     <string name="activeConfigCaption">I am an active config caption! :)</string>
+
+    <!-- Options -->
+    <string name="alliance">Current Alliance:</string>
+    <string name="blueAlliance">Blue</string>
+    <string name="redAlliance">Red</string>
+    <string name="submit">Submit</string>
 
 </resources>

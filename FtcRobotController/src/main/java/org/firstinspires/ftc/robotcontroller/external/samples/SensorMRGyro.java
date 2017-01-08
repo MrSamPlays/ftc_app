@@ -66,7 +66,7 @@ public class SensorMRGyro extends LinearOpMode {
     gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
 
     // start calibrating the gyro.
-    telemetry.addData(">", "Gyro Calibrating. Do Not move!");
+    telemetry.addData(">", "Gyro Calibrating. Do Not moveStraight!");
     telemetry.update();
     gyro.calibrate();
 

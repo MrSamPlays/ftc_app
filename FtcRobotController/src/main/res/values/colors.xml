@@ -46,4 +46,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <color name="shadow">#050505</color>
   <color name="main_foreground">#d54b00</color>
   <color name="text">#ffc3b8</color>
+  <color name="side_foreground">#ffc3b8</color>
 </resources>

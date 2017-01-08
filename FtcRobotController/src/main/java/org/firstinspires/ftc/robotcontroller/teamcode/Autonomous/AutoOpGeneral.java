@@ -30,21 +30,27 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.robotcontroller.teamcode;
+package org.firstinspires.ftc.robotcontroller.teamcode.Autonomous;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetResourcesMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.imagenav.ImageReader;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.NavLibs;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.sensors.ColorSensor;
 
-@Autonomous(name = "Blue Automaticness", group = "Automatic")
-public class AutoOpBlue extends LinearOpMode {
+@Autonomous(name = "General Automaticness", group = "Nathan's Deprecated Test Routines")
+@Deprecated
+@Disabled
+public class AutoOpGeneral extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -53,9 +59,9 @@ public class AutoOpBlue extends LinearOpMode {
     private Bitmap beacons = null;
     private Bitmap centerVortex = null;
     private Bitmap cornerVortex = null;
+    private ColorSensor bottomSensor = null;
 
-    // DcMotor leftMotor = null;
-    // DcMotor rightMotor = null;
+    private NavLibs navigator = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -70,33 +76,54 @@ public class AutoOpBlue extends LinearOpMode {
         centerVortex = ImageReader.loadImage(R.drawable.center_vortex, 36, 36);
         cornerVortex = ImageReader.loadImage(R.drawable.corner_vortex, 36, 36);
 
+
         /* eg: Initialize the hardware variables. Note that the strings used here as parameters
          * to 'get' must correspond to the names assigned during the robot configuration
          * step (using the FTC Robot Controller app on the phone).
-         */
-        // leftMotor  = hardwareMap.dcMotor.get("left motor");
-        // rightMotor = hardwareMap.dcMotor.get("right motor");
 
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
-        // leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        // rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftMotor.setDirection(DcMotor.Direction.FORWARD);
+        rightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        // Wait for the game to start (driver presses PLAY)\
+        bottomSensor = new ColorSensor("ColorSensor", hardwareMap);
 
+        navigator = new NavLibs(leftMotor, rightMotor, sides, beacons, centerVortex, cornerVortex);
+
+        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+
+        runNav();
+
+        /*while (opModeIsActive()) {
+            boolean isRed = Robot.isRedAlliance();
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Color R", bottomSensor.getColor()[0]);
+            telemetry.addData("Color G", bottomSensor.getColor()[1]);
+            telemetry.addData("Color B", bottomSensor.getColor()[2]);
+            telemetry.addData("Found line?", navigator.testColor(bottomSensor, new float[]{255, 0, 0}, 50));
             telemetry.update();
 
-            // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-            // leftMotor.setPower(-gamepad1.left_stick_y);
-            // rightMotor.setPower(-gamepad1.right_stick_y);
-
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+        }*/
+    }
+
+    public void runNav() throws InterruptedException {
+
+        // EventDoer foundLine = navigator.findColor(bottomSensor, new float[]{150, 0, 0}, 75);
+
+        // while(!foundLine.isTriggered() && opModeIsActive()) {
+        while (opModeIsActive()) {
+            idle();
         }
+
+        /**
+         * if(!opModeIsActive()) {
+         return;
+         }
+         */
     }
 }

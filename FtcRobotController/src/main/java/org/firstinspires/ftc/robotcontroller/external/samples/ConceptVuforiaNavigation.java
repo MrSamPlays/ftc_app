@@ -186,7 +186,7 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
          *
          *     <li>If you want to break open the black box of a transformation matrix to understand
          *     what it's doing inside, use {@link MatrixF#getTranslation()} to fetch how much the
-         *     transform will move you in x, y, and z, and use {@link Orientation#getOrientation(MatrixF,
+         *     transform will moveStraight you in x, y, and z, and use {@link Orientation#getOrientation(MatrixF,
          *     AxesReference, AxesOrder, AngleUnit)} to determine the rotational motion that the transform
          *     will impart. See {@link #format(OpenGLMatrix)} below for an example.</li>
          *

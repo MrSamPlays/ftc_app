@@ -81,7 +81,7 @@ import java.util.Locale;
  *     <ol>GYR: Simply let the sensor sit flat for a few seconds.</ol>
  *     <ol>ACC: Move the sensor in various positions. Start flat, then rotate slowly by 45
  *              degrees, hold for a few seconds, then continue rotating another 45 degrees and
- *              hold, etc. 6 or more movements of this type may be required. You can move through
+ *              hold, etc. 6 or more movements of this type may be required. You can moveStraight through
  *              any axis you desire, but make sure that the device is lying at least once
  *              perpendicular to the x, y, and z axis.</ol>
  *     <ol>MAG: Move slowly in a figure 8 pattern in the air, until the calibration values reaches 3.</ol>

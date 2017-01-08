@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="104dp"
+        android:layout_height="wrap_content"
+        android:text="@string/alliance"
+        android:id="@+id/allianceHint"
+        android:layout_weight="0.02"
+        android:layout_gravity="center_horizontal" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.02"
+        android:id="@+id/allianceChoice">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/blueAlliance"
+            android:id="@+id/blueRadio"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.02"
+            android:checked="true" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/redAlliance"
+            android:id="@+id/redRadio"
+            android:checked="false" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Delay Start"
+        android:id="@+id/delaytext"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.02" />
+
+    <EditText
+        android:layout_width="74dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/delay"
+        android:layout_gravity="center_horizontal"
+        android:singleLine="true"
+        android:width="3dp"
+        android:text="0"
+        android:hint='"Enter a number"' />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="327dp">
+
+        <Button
+            android:text="Cancel"
+            android:layout_width="188dp"
+            android:layout_height="60dp"
+            android:id="@+id/cancel"
+            android:layout_gravity="end"
+            android:layout_weight="0.06" />
+
+        <Button
+            android:layout_width="164dp"
+            android:layout_height="60dp"
+            android:text="@string/submit"
+            android:id="@+id/submit"
+            android:elevation="0dp"
+            android:layout_gravity="start" />
+    </GridLayout>
+
+</LinearLayout>
