@@ -134,6 +134,7 @@ public class Robot extends CustomLOpMode {
             }
             idle();
         }
+
     }
 
     public float getX() {
@@ -190,13 +191,11 @@ public class Robot extends CustomLOpMode {
             BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             L.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             R.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            generator.startTone(ToneGenerator.TONE_CDMA_HIGH_S_X4, 200);
             BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             idle();
-
         } while (BL.getCurrentPosition() != 0 || BR.getCurrentPosition() != 0 || L.getCurrentPosition() != 0 || R.getCurrentPosition() != 0);
     }
 

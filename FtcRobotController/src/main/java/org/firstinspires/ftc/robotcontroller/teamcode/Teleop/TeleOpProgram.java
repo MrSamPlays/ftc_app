@@ -4,15 +4,12 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.support.annotation.MainThread;
 
-import com.qualcomm.ftccommon.SoundPlayer;
-import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
 import org.firstinspires.ftc.robotcontroller.teamcode.Working;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
-import org.firstinspires.ftc.robotcore.internal.AppUtil;
 
 /**
  * Created by sam on 25-Nov-16.
@@ -64,7 +61,9 @@ public class TeleOpProgram extends CustomLOpMode {
     Runnable wincher = new Runnable() {
         @Override
         public void run() {
-            r.Winch.setPower(gamepad2.left_stick_y);
+            while (opModeIsActive()) {
+                r.Winch.setPower(-gamepad2.left_stick_y);
+            }
         }
     };
     Thread teleOpL = new Thread(driveL);

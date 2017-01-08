@@ -19,16 +19,15 @@ import java.util.Locale;
  * Created by sam on 20-Dec-16.
  * Its working I guess
  */
-@Autonomous(name = "Autonomous", group = "sorta working")
+@Autonomous(name = "Autonomous", group = "not guaranteed to work")
 public class AutonomousProgram extends CustomLOpMode {
     final double MOTOR_MOVE_CONSTANT = 0.35;
-    final int MOTOR_ENCODER_360_SPIN = 5106;
-    int relposL = 0;
-    int relposR = 0;
+    final int MOTOR_ENCODER_360_SPIN = 12527;
     Robot r = new Robot();
     Thread t = null;
     Thread beep = new Thread(new BeepBoop());
     Thread boop = new Thread(new BoopBeep());
+
     @Override
     public void runOpMode() throws Throwable {
         r.initializeRobot(hardwareMap);
@@ -42,14 +41,14 @@ public class AutonomousProgram extends CustomLOpMode {
         if (t != null) { // Debug code do not remove!!
             t.start();
         }
+        KnockBallDown();
+        findLine();
+        // followLine();
+        findBeacon();
+        prepareSecondBeacon();
+        goToSecondBeacon();
         while (opModeIsActive()) {
-            KnockBallDown();
-            findLine();
-            // followLine();
-            findBeacon();
-            goToSecondBeacon();
             idle();
-            break;
         }
     }
 
@@ -78,8 +77,8 @@ public class AutonomousProgram extends CustomLOpMode {
         r.generator.startTone(ToneGenerator.TONE_CDMA_NETWORK_BUSY_ONE_SHOT, 200);
         if (GetAllianceMiddleman.isRed()) {
             // Turn left
-            r.R.setTargetPosition((MOTOR_ENCODER_360_SPIN/4) + relposR);
-            while (r.gyroIsWorking ? (r.gyro.getHeading() >= 270 || r.gyro.getHeading() <= 90) : r.R.getCurrentPosition() <= (MOTOR_ENCODER_360_SPIN/4) + relposR && !r.R.isBusy() && opModeIsActive()) {
+            r.R.setTargetPosition((MOTOR_ENCODER_360_SPIN / 4));
+            while (r.gyroIsWorking ? (r.gyro.getHeading() >= 270 || r.gyro.getHeading() <= 90) : r.R.getCurrentPosition() <= (MOTOR_ENCODER_360_SPIN / 4)) {
                 r.L.setPower(0);
                 r.R.setPower(MOTOR_MOVE_CONSTANT);
                 r.BL.setPower(0);
@@ -89,8 +88,8 @@ public class AutonomousProgram extends CustomLOpMode {
             r.haltMotors();
         } else {
             // Turn Right
-            r.L.setTargetPosition((MOTOR_ENCODER_360_SPIN/4) + relposL);
-            while ((r.gyroIsWorking ? (r.gyro.getHeading() <= 90 || r.gyro.getHeading() >= 270) : (r.L.getCurrentPosition() <= (MOTOR_ENCODER_360_SPIN/4) + relposL && !r.L.isBusy()))) {
+            r.L.setTargetPosition((MOTOR_ENCODER_360_SPIN / 4));
+            while ((r.gyroIsWorking ? (r.gyro.getHeading() <= 90 || r.gyro.getHeading() >= 270) : (r.L.getCurrentPosition() <= (MOTOR_ENCODER_360_SPIN / 4)))) {
                 r.L.setPower(MOTOR_MOVE_CONSTANT);
                 r.R.setPower(0);
                 r.BL.setPower(MOTOR_MOVE_CONSTANT);
@@ -112,10 +111,14 @@ public class AutonomousProgram extends CustomLOpMode {
         r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_INTERGROUP);
         r.haltMotors();
     }
+
     private void findLine() throws InterruptedException {
         // TODO finish adding line finder
         boolean linefound = false;
-        while (!linefound) {
+        // How many times did we have to move backward from the line
+        int count = 0;
+
+        while (!linefound && count < 2) {
             // change the first parameter to check at this interval, lower number means increased checking interval thus increasing robot stutter movement
             r.moveForward(600, MOTOR_MOVE_CONSTANT);
             if (r.colorSensorL.argb() != 0 || r.colorSensorR.argb() != 0) {
@@ -124,9 +127,11 @@ public class AutonomousProgram extends CustomLOpMode {
             if (r.distanceSensor.getLightDetected() > 0.01 && !linefound) {
                 // we did not find the line back up and do something else
                 r.moveBackward(1200, MOTOR_MOVE_CONSTANT);
+                count++;
             }
             idle();
         }
+        r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_PAT5);
         r.haltMotors();
     }
     /*
@@ -216,37 +221,57 @@ public class AutonomousProgram extends CustomLOpMode {
             }
         }
     }
-    private void goToSecondBeacon() throws InterruptedException {
+
+    private void prepareSecondBeacon() throws InterruptedException {
+        boolean gyroIsWorkingBefore = r.gyroIsWorking;
         r.resetEncoders();
-        r.moveBackward(600, 1);
+        r.moveBackward(800, 1);
+        // r.gyroIsWorking = false;
         if (r.isRedAlliance()) {
-            while(r.gyroIsWorking ? (r.gyro.getHeading() > 270 || r.gyro.getHeading() < 90) : r.L.getCurrentPosition() < MOTOR_ENCODER_360_SPIN/4) {
+            while (r.gyroIsWorking ? (r.gyro.getHeading() > 180) : r.L.getCurrentPosition() < MOTOR_ENCODER_360_SPIN / 4) {
                 r.L.setPower(MOTOR_MOVE_CONSTANT);
                 r.R.setPower(0);
                 r.BL.setPower(MOTOR_MOVE_CONSTANT);
                 r.BR.setPower(0);
+                idle();
             }
         } else {
-            while(r.gyroIsWorking ? (r.gyro.getHeading() > 270 || r.gyro.getHeading() < 90) : r.R.getCurrentPosition() < MOTOR_ENCODER_360_SPIN/4) {
+            while (r.gyroIsWorking ? (r.gyro.getHeading() > 0 || r.gyro.getHeading() < 180) : r.R.getCurrentPosition() < MOTOR_ENCODER_360_SPIN / 4) {
                 r.L.setPower(0);
                 r.R.setPower(MOTOR_MOVE_CONSTANT);
                 r.BL.setPower(0);
                 r.BR.setPower(MOTOR_MOVE_CONSTANT);
+                idle();
             }
         }
+        r.haltMotors();
+        // r.gyroIsWorking = gyroIsWorkingBefore;
     }
+    private void goToSecondBeacon() {
+        boolean linefound = false;
+        while (!linefound) {
+            if (r.colorSensorL.argb() != 0 || r.colorSensorR.argb() != 0) {
+                linefound = true;
+            }
+            r.moveStraight(1);
+        }
+        r.haltMotors();
+    }
+
     class BoopBeep implements Runnable {
         @Override
         public void run() {
             r.generator.startTone(ToneGenerator.TONE_CDMA_ANSWER, 1000);
         }
     }
+
     class BeepBoop implements Runnable {
         @Override
         public void run() {
             r.generator.startTone(ToneGenerator.TONE_PROP_BEEP);
         }
     }
+
     class RunThread implements Runnable {
         File f = null;
         Writer out = null;
@@ -280,7 +305,7 @@ public class AutonomousProgram extends CustomLOpMode {
                 telemetry.addData("Gyro", r.gyro.getHeading());
                 telemetry.addData("Alliance color", (GetAllianceMiddleman.isRed() ? "Red" : "Blue"));
                 telemetry.addData("Encoder L", r.L.getCurrentPosition());
-                telemetry.addData("Encoder R", r.L.getCurrentPosition());
+                telemetry.addData("Encoder R", r.R.getCurrentPosition());
                 telemetry.update();
                 if (isStopRequested()) {
                     break;
