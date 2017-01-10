@@ -14,7 +14,7 @@ import java.nio.DoubleBuffer;
  * Created by sam on 06-Jan-17.
  * It works if it works
  */
-@Autonomous (name = "Autonomous v2")
+@Autonomous (name = "Autonomous v2", group = "Z not working")
 public class AutonomousBeacon extends CustomLOpMode {
     boolean isRedAlliance;
     final double MOTOR_MOVE_CONSTANT = 0.35;

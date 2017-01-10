@@ -229,6 +229,7 @@ public class Robot extends CustomLOpMode {
                 BR.setPower(power);
             }
         }
+        haltMotors();
     }
 
     public void moveStraight(double power) {
@@ -250,5 +251,6 @@ public class Robot extends CustomLOpMode {
                 BR.setPower(-power);
             }
         }
+        haltMotors();
     }
 }

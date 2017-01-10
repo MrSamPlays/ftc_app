@@ -4,6 +4,7 @@ import android.media.ToneGenerator;
 import android.os.Environment;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
@@ -27,26 +28,28 @@ public class AutonomousProgram extends CustomLOpMode {
     Thread t = null;
     Thread beep = new Thread(new BeepBoop());
     Thread boop = new Thread(new BoopBeep());
+    ElapsedTime time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     @Override
     public void runOpMode() throws Throwable {
         r.initializeRobot(hardwareMap);
         r.beaconFinder.enableLed(false);
-        waitForStart();
         t = new Thread(new RunThread()); // comment out for telemetry only.
-
-        r.cdim.setLED(0, true);
-        waitForStart();
-        Thread.sleep((int) Math.floor(GetAllianceMiddleman.getDelayms()));
         if (t != null) { // Debug code do not remove!!
             t.start();
         }
+        waitForStart();
+        r.cdim.setLED(0, true);
+        waitForStart();
+        time.reset();
+        Thread.sleep((int) Math.floor(GetAllianceMiddleman.getDelayms()));
         KnockBallDown();
         findLine();
         // followLine();
         findBeacon();
         prepareSecondBeacon();
         goToSecondBeacon();
+        squareUpWithLine();
         while (opModeIsActive()) {
             idle();
         }
@@ -120,7 +123,7 @@ public class AutonomousProgram extends CustomLOpMode {
 
         while (!linefound && count < 2) {
             // change the first parameter to check at this interval, lower number means increased checking interval thus increasing robot stutter movement
-            r.moveForward(600, MOTOR_MOVE_CONSTANT);
+            r.moveStraight(MOTOR_MOVE_CONSTANT);
             if (r.colorSensorL.argb() != 0 || r.colorSensorR.argb() != 0) {
                 linefound = true;
             }
@@ -205,6 +208,7 @@ public class AutonomousProgram extends CustomLOpMode {
             } else {
                 // hit it again and then move on
                 r.moveBackward(250, 1);
+                r.haltMotors();
                 r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_PING_RING);
                 sleep(5000);
                 r.moveForward(250, 0.5);
@@ -215,6 +219,7 @@ public class AutonomousProgram extends CustomLOpMode {
             } else {
                 // hit it again then move on
                 r.moveBackward(250, 1);
+                r.haltMotors();
                 r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_PING_RING);
                 sleep(5000);
                 r.moveForward(250, 0.5);
@@ -256,6 +261,48 @@ public class AutonomousProgram extends CustomLOpMode {
             r.moveStraight(1);
         }
         r.haltMotors();
+    }
+    private void squareUpWithLine() {
+        if (GetAllianceMiddleman.isRed()) {
+            // turn left a little bit
+            while (r.R.getCurrentPosition() < 550) {
+                r.L.setPower(-MOTOR_MOVE_CONSTANT/2);
+                r.R.setPower(MOTOR_MOVE_CONSTANT);
+                r.BL.setPower(-MOTOR_MOVE_CONSTANT/2);
+                r.BR.setPower(MOTOR_MOVE_CONSTANT);
+            }
+
+        } else {
+            // Turn right a little bit
+            while (r.L.getCurrentPosition() < 550) {
+                r.L.setPower(MOTOR_MOVE_CONSTANT);
+                r.R.setPower(-MOTOR_MOVE_CONSTANT/2);
+                r.BL.setPower(MOTOR_MOVE_CONSTANT);
+                r.BR.setPower(-MOTOR_MOVE_CONSTANT/2);
+            }
+        }
+        r.haltMotors();
+        boolean linefound = false;
+        if (GetAllianceMiddleman.isRed()) {
+            // turn left until it sees the white line again
+            while (!linefound) {
+                r.L.setPower(-MOTOR_MOVE_CONSTANT/2);
+                r.R.setPower(MOTOR_MOVE_CONSTANT);
+                r.BL.setPower(-MOTOR_MOVE_CONSTANT/2);
+                r.BR.setPower(MOTOR_MOVE_CONSTANT);
+                linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
+            }
+        } else {
+            // Turn right until it sees the white line again
+            while (!linefound) {
+                r.L.setPower(MOTOR_MOVE_CONSTANT);
+                r.R.setPower(-MOTOR_MOVE_CONSTANT/2);
+                r.BL.setPower(MOTOR_MOVE_CONSTANT);
+                r.BR.setPower(-MOTOR_MOVE_CONSTANT/2);
+                linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
+            }
+        }
+
     }
 
     class BoopBeep implements Runnable {
