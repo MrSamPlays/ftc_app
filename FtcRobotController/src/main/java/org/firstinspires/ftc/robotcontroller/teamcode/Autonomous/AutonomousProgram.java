@@ -38,10 +38,13 @@ public class AutonomousProgram extends CustomLOpMode {
         if (t != null) { // Debug code do not remove!!
             t.start();
         }
-        waitForStart();
+
         r.cdim.setLED(0, true);
+
         waitForStart();
+
         time.reset();
+
         Thread.sleep((int) Math.floor(GetAllianceMiddleman.getDelayms()));
         KnockBallDown();
         findLine();
@@ -66,7 +69,7 @@ public class AutonomousProgram extends CustomLOpMode {
 
     private void KnockBallDown() throws InterruptedException {
         r.resetEncoders();
-        while (r.L.getCurrentPosition() < 3800 && opModeIsActive()) {
+        while (r.L.getCurrentPosition() < 3500 && opModeIsActive()) {
             r.L.setPower(1);
             r.R.setPower(1);
             r.BL.setPower(1);
@@ -194,10 +197,10 @@ public class AutonomousProgram extends CustomLOpMode {
         //TODO add some code to get to the beacon
         while (r.distanceSensor.getLightDetected() < 0.02) {
             // we need to move toward the beacon
-            r.L.setPower(MOTOR_MOVE_CONSTANT);
-            r.R.setPower(MOTOR_MOVE_CONSTANT);
-            r.BL.setPower(MOTOR_MOVE_CONSTANT);
-            r.BR.setPower(MOTOR_MOVE_CONSTANT);
+            r.L.setPower(MOTOR_MOVE_CONSTANT / 2);
+            r.R.setPower(MOTOR_MOVE_CONSTANT / 2);
+            r.BL.setPower(MOTOR_MOVE_CONSTANT / 2);
+            r.BR.setPower(MOTOR_MOVE_CONSTANT / 2);
         }
         r.haltMotors();
         boolean isRed = r.beaconFinder.red() > 0;
