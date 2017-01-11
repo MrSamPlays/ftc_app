@@ -107,7 +107,6 @@ public class TeleOpProgram extends CustomLOpMode {
 
     class BMer implements Runnable {
         private boolean done;
-
         @Override
         public void run() {
             while (opModeIsActive()) {
@@ -126,6 +125,7 @@ public class TeleOpProgram extends CustomLOpMode {
                 if (gamepad2.b) {
                     generator.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);
                 }
+                Thread.yield();
             }
         }
     }

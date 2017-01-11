@@ -103,7 +103,7 @@ public class Robot extends CustomLOpMode {
         // colorSensorR = hwmap.colorSensor.get("colorSensorR");
         colorSensorR = new ModernRoboticsI2cColorSensor(cdim, 1);
         // gyro = hwmap.gyroSensor.get("gyro");
-        gyro = new ModernRoboticsI2cGyro(cdim, 2);
+        gyro = new ModernRoboticsI2cGyro(cdim, 4);
         //beaconFinder = hwmap.colorSensor.get("beaconFinder");
         beaconFinder = new ModernRoboticsI2cColorSensor(cdim, 3);
         colorSensorL.setI2cAddress(I2cAddr.create8bit(0x3C));
