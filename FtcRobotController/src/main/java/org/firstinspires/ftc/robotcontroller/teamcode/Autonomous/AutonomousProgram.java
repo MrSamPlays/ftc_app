@@ -116,7 +116,6 @@ public class AutonomousProgram extends CustomLOpMode {
         r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_INTERGROUP);
         r.haltMotors();
     }
-
     private void findLine() throws InterruptedException {
         // TODO finish adding line finder
         boolean linefound = false;
@@ -130,7 +129,7 @@ public class AutonomousProgram extends CustomLOpMode {
             }
             if (r.distanceSensor.getLightDetected() > 0.01 && !linefound) {
                 // we did not find the line back up and try again
-                r.moveBackward(1200, MOTOR_TURN_CONSTANT);
+                r.moveBackward(1200, MOTOR_MOVE_CONSTANT);
                 count++;
             }
             idle();
@@ -140,7 +139,7 @@ public class AutonomousProgram extends CustomLOpMode {
     }
 
     private void findBeacon() throws InterruptedException {
-        while (r.distanceSensor.getLightDetected() < 0.02) {
+        while (r.distanceSensor.getLightDetected() < 0.07) {
             // we need to move toward the beacon
             advanceLineFollowRoutine();
             idle();
@@ -247,7 +246,7 @@ public class AutonomousProgram extends CustomLOpMode {
                 idle();
             }
         } else {
-            while (r.gyroIsWorking ? (r.gyro.getHeading() > 0 || r.gyro.getHeading() < 180) : r.R.getCurrentPosition() < MOTOR_ENCODER_360_SPIN / 4) {
+            while (r.gyroIsWorking ? (r.gyro.getHeading() > 0 && r.gyro.getHeading() < 180) : r.R.getCurrentPosition() < MOTOR_ENCODER_360_SPIN / 4) {
                 r.L.setPower(0);
                 r.R.setPower(MOTOR_TURN_CONSTANT);
                 r.BL.setPower(0);
@@ -347,7 +346,7 @@ public class AutonomousProgram extends CustomLOpMode {
         r.haltMotors();
     }
 
-    private void advanceLineFollowRoutine() throws InterruptedException{
+    private void advanceLineFollowRoutine() throws InterruptedException {
         loop:
         if (r.colorSensorL.argb() != 0 && r.colorSensorR.argb() != 0) {
             // we squared up with the line
