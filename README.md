@@ -8,7 +8,15 @@ The FTC Driver Station app is available through Google Play.
 To use this SDK, download/clone the entire project to your local computer.
 Use Android Studio to import the folder  ("Import project (Eclipse ADT, Gradle, etc.)").
 
+<<<<<<< HEAD
 Documentation for the FTC SDK are included with this repository.  There is a subfolder called "doc" which contains several subfolders:
+=======
+The Javadoc reference documentation for the FTC SDK is now available online.  Visit the following URL to view the FTC SDK documentation as a live website:
+
+http://ftctechnh.github.io/ftc_app/doc/javadoc/index.html
+
+Documentation for the FTC SDK is also included with this repository.  There is a subfolder called "doc" which contains several subfolders:
+>>>>>>> a337d8124b93802804d6d23aadea957373543862
 
  * The folder "apk" contains the .apk files for the FTC Driver Station and FTC Robot Controller apps.
  * The folder "javadoc" contains the JavaDoc user documentation for the FTC SDK.
@@ -18,6 +26,75 @@ For technical questions regarding the SDK, please visit the FTC Technology forum
 
   http://ftcforum.usfirst.org/forumdisplay.php?156-FTC-Technology
 
+<<<<<<< HEAD
+=======
+
+**************************************************************************************
+
+Version 2.4 (released on 16.11.13)
+  * Fix to avoid crashing for nonexistent resources.
+  * Blocks Programming mode changes:
+     - Added blocks to support OpenGLMatrix, MatrixF, and VectorF.
+     - Added blocks to support AngleUnit, AxesOrder, AxesReference, CameraDirection, CameraMonitorFeedback, DistanceUnit, and TempUnit.
+     - Added blocks to support Acceleration.
+     - Added blocks to support LinearOpMode.getRuntime.
+     - Added blocks to support MagneticFlux and Position.
+     - Fixed typos.
+     - Made blocks for ElapsedTime more consistent with other objects.
+     - Added blocks to support Quaternion, Velocity, Orientation, AngularVelocity.
+     - Added blocks to support VuforiaTrackables, VuforiaTrackable, VuforiaLocalizer, VuforiaTrackableDefaultListener.
+     - Fixed a few blocks.
+     - Added type checking to new blocks.
+     - Updated to latest blockly.
+     - Added default variable blocks to navigation and matrix blocks.
+     - Fixed toolbox entry for openGLMatrix_rotation_withAxesArgs.
+     - When user downloads Blocks-generated op mode, only the .blk file is downloaded.
+     - When user uploads Blocks-generated op mode (.blk file), Javascript code is auto generated.
+     - Added DbgLog support.
+     - Added logging when a blocks file is read/written.
+     - Fixed bug to properly render blocks even if missing devices from configuration file.
+     - Added support for additional characters (not just alphanumeric) for the block file names (for download and upload).
+     - Added support for OpMode flavor (“Autonomous” or “TeleOp”) and group.
+  * Changes to Samples to prevent tutorial issues.
+  * Incorporated suggested changes from public pull 216 (“Replace .. paths”).
+  * Remove Servo Glitches when robot stopped.
+  * if user hits “Cancels” when editing a configuration file, clears the unsaved changes and reverts to original unmodified configuration.
+  * Added log info to help diagnose why the Robot Controller app was terminated (for example, by watch dog function).
+  * Added ability to transfer log from the controller.
+  * Fixed inconsistency for AngularVelocity
+  * Limit unbounded growth of data for telemetry.  If user does not call telemetry.update() for LinearOpMode in a timely manner, data added for telemetry might get lost if size limit is exceeded.
+
+**************************************************************************************
+
+Version 2.35 (released on 16.10.06)
+  * Blockly programming mode - Removed unnecesary idle() call from blocks for new project.
+
+**************************************************************************************
+
+Version 2.30 (released on 16.10.05)
+  * Blockly programming mode:
+     - Mechanism added to save Blockly op modes from Programming Mode Server onto local device
+     - To avoid clutter, blocks are displayed in categorized folders
+     - Added support for DigitalChannel
+     - Added support for ModernRoboticsI2cCompassSensor
+     - Added support for ModernRoboticsI2cRangeSensor
+     - Added support for VoltageSensor
+     - Added support for AnalogInput
+     - Added support for AnalogOutput
+     - Fix for CompassSensor setMode block
+  * Vuforia
+     - Fix deadlock / make camera data available while Vuforia is running.
+     - Update to Vuforia 6.0.117 (recommended by Vuforia and Google to close security loophole). 
+  * Fix for autonomous 30 second timer bug (where timer was in effect, even though it appeared to have timed out).
+  * opModeIsActive changes to allow cleanup after op mode is stopped (with enforced 2 second safety timeout).
+  * Fix to avoid reading i2c twice.
+  * Updated sample Op Modes.
+  * Improved logging and fixed intermittent freezing.
+  * Added digital I/O sample.
+  * Cleaned up device names in sample op modes to be consistent with Pushbot guide.
+  * Fix to allow use of IrSeekerSensorV3.
+
+>>>>>>> a337d8124b93802804d6d23aadea957373543862
 **************************************************************************************
 
 Version 2.20 (released on 16.09.08)
@@ -245,6 +322,7 @@ Release 15.10.06.002
  * Minor UI and bug fixes for driver station and robot controller apps.
  * Throws error if Ultrasonic sensor (NXT) is not configured for legacy module port 4 or 5.
 
+<<<<<<< HEAD
 T. Eng
 October 6, 2015
 
@@ -269,4 +347,28 @@ In this latest version of the FTC SDK (20150803_001) the following changes shoul
 T. Eng
 August 3, 2015
 This robot is good
+=======
+T. Eng
+October 6, 2015
+>>>>>>> a337d8124b93802804d6d23aadea957373543862
 
+**************************************************************************************
+
+In this latest version of the FTC SDK (20150803_001) the following changes should be noted:
+
+ * New user interfaces for FTC Driver Station and FTC Robot Controller apps.
+ * An init() method is added to the OpMode class.
+   - For this release, init() is triggered right before the start() method.
+   - Eventually, the init() method will be triggered when the user presses an "INIT" button on driver station.
+   - The init() and loop() methods are now required (i.e., need to be overridden in the user's op mode).
+   - The start() and stop() methods are optional.
+ * A new LinearOpMode class is introduced.
+   - Teams can use the LinearOpMode mode to create a linear (not event driven) program model.
+   - Teams can use blocking statements like Thread.sleep() within a linear op mode.
+ * The API for the Legacy Module and Core Device Interface Module have been updated.
+   - Support for encoders with the Legacy Module is now working.
+ * The hardware loop has been updated for better performance.
+
+
+T. Eng
+August 3, 2015

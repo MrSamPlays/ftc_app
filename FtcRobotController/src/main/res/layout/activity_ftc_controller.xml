@@ -46,7 +46,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     android:layout_width="fill_parent"
     android:layout_height="80dp"
       android:background="@color/main_foreground">
-
     <ImageView
       android:id="@+id/robotIcon"
       android:src="@drawable/icon_robotcontroller"
@@ -130,20 +129,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           android:id="@+id/cameraMonitorViewId"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textRemoteProgrammingMode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#ff0066B3"
-            android:gravity="center"
-            android:textColor="#ffffffff"
-            android:textSize="40sp"
-            android:textStyle="bold"
-            android:visibility="invisible"
-            android:text="" />
-      </LinearLayout>
+          android:orientation="vertical"
+          />
 
       <!-- When visible, the error message will overlay and thus partially
            obscure part of the camera monitor. We make this trade off so as to
@@ -174,6 +161,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true"
+      android:visibility="invisible"
+      android:text="" />
+
+    <TextView
+      android:id="@+id/textRemoteProgrammingMode"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="#ff0066B3"
+      android:gravity="center"
+      android:textColor="#ffffffff"
+      android:textSize="40sp"
+      android:textStyle="bold"
       android:visibility="invisible"
       android:text="" />
 
