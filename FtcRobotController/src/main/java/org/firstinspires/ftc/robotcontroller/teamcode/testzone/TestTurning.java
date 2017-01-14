@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 /**
  * Created by sam on 07-Jan-17.
  */
-@Autonomous (name = "testTurning")
+@Autonomous (name = "testTurning", group = "tests")
 public class TestTurning extends CustomLOpMode {
     Robot r = new Robot();
     final double MOTOR_MOVE_CONSTANT =0.4;
