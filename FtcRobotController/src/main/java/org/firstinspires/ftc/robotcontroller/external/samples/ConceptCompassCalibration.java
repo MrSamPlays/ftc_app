@@ -104,8 +104,7 @@ public class ConceptCompassCalibration extends LinearOpMode {
         // run until time expires OR the driver presses STOP;
         runtime.reset();
         while (opModeIsActive() && (runtime.time() < CAL_TIME_SEC)) {
-
-            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+            idle();
         }
 
         // Stop all motors and turn off claibration
@@ -123,6 +122,5 @@ public class ConceptCompassCalibration extends LinearOpMode {
         else
             telemetry.addData("Compass", "Calibrate Passed.");
         telemetry.update();
-
     }
 }

@@ -7,8 +7,17 @@
 // the build definitions, you can place those customizations in this file, but
 // please think carefully as to whether such customizations are really necessary
 // before doing so.
+<<<<<<< HEAD
 // Custom definitions may go here
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 dependencies {
 }
+=======
+
+
+// Custom definitions may go here
+
+// Include common definitions from above.
+apply from: '../build.common.gradle'
+>>>>>>> a337d8124b93802804d6d23aadea957373543862
