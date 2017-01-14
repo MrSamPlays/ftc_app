@@ -96,6 +96,7 @@ public class OptionsActivity extends Activity {
         super.onStart();
         setContentView(R.layout.activity_options);
         intent = new Intent(this, FtcRobotControllerActivity.class);
+        configfile = new File(Environment.getDataDirectory(), "config.properties");
         try {
             in = new FileInputStream(configfile);
             prop.load(in);

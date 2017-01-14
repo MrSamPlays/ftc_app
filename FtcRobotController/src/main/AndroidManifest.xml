@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
           xmlns:tools="http://schemas.android.com/tools"
           package="com.qualcomm.ftcrobotcontroller"
           android:versionCode="15"
@@ -28,10 +29,6 @@
       <meta-data
         android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
         android:resource="@xml/device_filter" />
-    </activity>
-    <activity android:name="org.firstinspires.ftc.robotcontroller.internal.FTCJokesActivity"
-      android:configChanges="orientation|screenSize"
-        android:launchMode="singleTask">
     </activity>
 
     <activity
