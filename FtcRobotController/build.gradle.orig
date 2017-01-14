@@ -1,24 +1,16 @@
-<<<<<<< HEAD
-=======
 import java.util.regex.Pattern
 
->>>>>>> a337d8124b93802804d6d23aadea957373543862
 //
 // build.gradle in FtcRobotController
 //
 apply plugin: 'com.android.library'
-<<<<<<< HEAD
-=======
 
->>>>>>> a337d8124b93802804d6d23aadea957373543862
 android {
 
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 19
     }
-<<<<<<< HEAD
-=======
 
     compileSdkVersion 23
     buildToolsVersion '23.0.3'
@@ -27,25 +19,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
->>>>>>> a337d8124b93802804d6d23aadea957373543862
 
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-}
 repositories {
     flatDir {
         dirs '../libs'
     }
 }
-apply from: 'build.release.gradle'
-
 <<<<<<< HEAD
-dependencies {
-}
-=======
 apply from: 'build.release.gradle'
->>>>>>> a337d8124b93802804d6d23aadea957373543862
+=======
+
+apply from: 'build.release.gradle'
+>>>>>>> ftctechnh-master
