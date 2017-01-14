@@ -20,7 +20,8 @@ import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 @MainThread
 public class TeleOpProgram extends CustomLOpMode {
     ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-
+    boolean xPressed = false;
+    boolean yPressed = false;
     Robot r = new Robot();
     Runnable runnable = new Runnable() {
         @Override
@@ -66,10 +67,102 @@ public class TeleOpProgram extends CustomLOpMode {
             }
         }
     };
+    FlashMode mode = FlashMode.OFF;
+    Runnable flasher = new Runnable() {
+
+        @Override
+        public void run() {
+            while (opModeIsActive()) {
+                /*switch (mode) {
+                    *//**
+                     * Led off
+                     *//*
+                    case OFF:
+                        r.beaconFinder.enableLed(false);
+                        break;
+                    *//**
+                     * LED on
+                     *//*
+                    case STEADY:
+                    default:
+                        r.beaconFinder.enableLed(true);
+                        break;
+                }*/
+                switch (mode) {
+                    /**
+                     * LED Pulse
+                     */
+                    case FLASHING_1:
+
+                            r.beaconFinder.enableLed(true);
+                            try {
+                                sleep(500);
+                            } catch (Exception e) {
+
+                            }
+                            r.beaconFinder.enableLed(false);
+                            try {
+                                sleep(500);
+                                idle();
+                            } catch (Exception e) {
+
+                            }
+                        break;
+                    /**
+                     * LED Heartbeat
+                     */
+                    case FLASHING_2:
+                        for (int i = 0; i < 3; i++) {
+                            r.beaconFinder.enableLed(true);
+                            try {
+                                sleep(100);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            r.beaconFinder.enableLed(false);
+                            try {
+                                sleep(100);
+                                idle();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        try {
+                            sleep(600);
+                            idle();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    /**
+                     * LED Strobe
+                     */
+                    case FLASHING_3:
+                        r.beaconFinder.enableLed(true);
+                        try {
+                            sleep(50);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        r.beaconFinder.enableLed(false);
+                        try {
+                            sleep(50);
+                            idle();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                }
+
+            }
+        }
+    };
     Thread teleOpL = new Thread(driveL);
     Thread teleOpR = new Thread(driveR);
     Thread teleOpBM = new Thread(new BMer());
+    Thread flash = new Thread(flasher);
     Thread teleOpLifter = new Thread(wincher);
+    Thread triggered = new Thread(new TriggerStraight());
 
     @Override
     @MainThread
@@ -80,7 +173,9 @@ public class TeleOpProgram extends CustomLOpMode {
         teleOpL.start();
         teleOpR.start();
         teleOpBM.start();
+        flash.start();
         teleOpLifter.start();
+        triggered.start();
         while (opModeIsActive()) {
             // resetEncoders();
             telemetry.addData("Left Color", Integer.toHexString(r.colorSensorL.argb()));
@@ -95,6 +190,7 @@ public class TeleOpProgram extends CustomLOpMode {
             telemetry.addData("Alliance color", (GetAllianceMiddleman.isRed() ? "Red" : "Blue"));
             telemetry.addData("EncoderL", r.L.getCurrentPosition());
             telemetry.addData("EncoderR", r.R.getCurrentPosition());
+            telemetry.addData("Flash pattern", mode);
             telemetry.update();
             idle();
         }
@@ -103,27 +199,111 @@ public class TeleOpProgram extends CustomLOpMode {
         teleOpR = null;
         teleOpBM = null;
         teleOpLifter = null;
+        triggered = null;
     }
 
-    class BMer implements Runnable {
-        private boolean done;
+    enum FlashMode {
+        OFF,
+        FLASHING_1,
+        FLASHING_2,
+        FLASHING_3,
+        STEADY;
+    }
+    boolean reversed = false;
+    class Reverser implements Runnable {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                if (gamepad2.a) {
-                    try {
-                        r.resetEncoders();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                if (gamepad1.guide) {
+                    reversed = !reversed;
+                    while (gamepad1.guide) {
+                        try {
+                            idle();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
+            }
+        }
+    }
+    class TriggerStraight implements Runnable {
+        @Override
+        public void run() {
+            while (opModeIsActive()) {
+                if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_y == 0) {
+                    if (gamepad1.left_trigger != 0 && gamepad1.right_trigger == 0) {
+                        r.L.setPower(-gamepad1.left_trigger);
+                        r.R.setPower(-gamepad1.left_trigger);
+                        r.BL.setPower(-gamepad1.left_trigger);
+                        r.BR.setPower(-gamepad1.left_trigger);
+                    } else if (gamepad1.left_trigger == 0 && gamepad1.right_trigger != 0) {
+                        r.L.setPower(gamepad1.right_trigger);
+                        r.R.setPower(gamepad1.right_trigger);
+                        r.BL.setPower(gamepad1.right_trigger);
+                        r.BR.setPower(gamepad1.right_trigger);
+                    }
+                }
+            }
+        }
+    }
+    class BMer implements Runnable {
+        private boolean done;
+
+        @Override
+        public void run() {
+            while (opModeIsActive()) {
                     /*try {
                         Thread.sleep(1000);
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }*/
+                if (gamepad1.a) {
+                    generator.startTone(ToneGenerator.TONE_SUP_RINGTONE);
+                }
                 if (gamepad2.b) {
                     generator.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);
+                }
+                if (gamepad2.x) {
+                    switch (mode) {
+                        case FLASHING_1:
+                            mode = FlashMode.FLASHING_2;
+                            break;
+                        case FLASHING_2:
+                            mode = FlashMode.FLASHING_3;
+                            break;
+                        case FLASHING_3:
+                        default:
+                            mode = FlashMode.FLASHING_1;
+                            break;
+                    }
+                    while (gamepad2.x) {
+                        try {
+                            idle();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                if (gamepad2.y) {
+                    switch (mode) {
+                        case STEADY:
+                            mode = FlashMode.OFF;
+                            r.beaconFinder.enableLed(false);
+                            break;
+                        case OFF:
+                        default:
+                            mode = FlashMode.STEADY;
+                            r.beaconFinder.enableLed(true);
+                            break;
+                    }
+                    while (gamepad2.y) {
+                        try {
+                            idle();
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                        }
+                    }
                 }
                 Thread.yield();
             }

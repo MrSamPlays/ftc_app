@@ -3,11 +3,10 @@ package org.firstinspires.ftc.robotcontroller.teamcode.libs.robot;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 
-import com.qualcomm.ftccommon.FtcRobotControllerService;
-import com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,6 +22,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
 
+import java.util.Locale;
+
 /**
  * <p>
  * I'm too lazy to document this code<br>
@@ -35,6 +36,9 @@ import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode
  * </p>
  */
 public class Robot extends CustomLOpMode {
+    final double MOTOR_TURN_CONSTANT = 0.25;
+    final double MOTOR_MOVE_CONSTANT = 0.35;
+    final int MOTOR_ENCODER_360_SPIN = 12527;
     public DcMotor L;
     public DcMotor R;
     public DcMotor BL;
@@ -52,10 +56,12 @@ public class Robot extends CustomLOpMode {
     public CRServo mtrsrv;
     public OpticalDistanceSensor distanceSensor;
     public ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-    private ElapsedTime period = new ElapsedTime();
-    private HardwareMap hwmap;
+    public ModernRoboticsI2cRangeSensor range;
     // private boolean initialized = false;
     public boolean gyroIsWorking = true;
+    SideOfLine side = SideOfLine.DISORIENTED;
+    private ElapsedTime period = new ElapsedTime();
+    private HardwareMap hwmap;
     private float x = 0;
     private float y = 0;
     private double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)); //The magnitude of the robot from the origin
@@ -97,13 +103,13 @@ public class Robot extends CustomLOpMode {
         Winch = hwmap.dcMotor.get("Winch");
         servctrl = hwmap.servoController.get("Servos");
         // mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
-
         // colorSensorL = hwmap.colorSensor.get("colorSensorL");
         colorSensorL = new ModernRoboticsI2cColorSensor(cdim, 0);
         // colorSensorR = hwmap.colorSensor.get("colorSensorR");
         colorSensorR = new ModernRoboticsI2cColorSensor(cdim, 1);
         // gyro = hwmap.gyroSensor.get("gyro");
         gyro = new ModernRoboticsI2cGyro(cdim, 4);
+        range = hwmap.get(ModernRoboticsI2cRangeSensor.class, "range");
         //beaconFinder = hwmap.colorSensor.get("beaconFinder");
         beaconFinder = new ModernRoboticsI2cColorSensor(cdim, 3);
         colorSensorL.setI2cAddress(I2cAddr.create8bit(0x3C));
@@ -185,6 +191,7 @@ public class Robot extends CustomLOpMode {
         BL.setPower(0);
         BR.setPower(0);
     }
+
     public void resetEncoders() throws InterruptedException {
         do {
             BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -196,7 +203,8 @@ public class Robot extends CustomLOpMode {
             L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             idle();
-        } while (BL.getCurrentPosition() != 0 || BR.getCurrentPosition() != 0 || L.getCurrentPosition() != 0 || R.getCurrentPosition() != 0);
+        }
+        while (BL.getCurrentPosition() != 0 || BR.getCurrentPosition() != 0 || L.getCurrentPosition() != 0 || R.getCurrentPosition() != 0);
     }
 
     public void waitForTick(long periodMs) throws InterruptedException {
@@ -238,6 +246,7 @@ public class Robot extends CustomLOpMode {
         BL.setPower(power);
         BR.setPower(power);
     }
+
     public void moveBackward(int distance, double power) throws InterruptedException {
         resetEncoders();
         if (distance < 0 || power < 0) {
@@ -252,5 +261,154 @@ public class Robot extends CustomLOpMode {
             }
         }
         haltMotors();
+    }
+
+    /**
+     * A way to line follow given a condition
+     * @param condition repeat while this condition is true
+     * @throws InterruptedException
+     */
+    public void advanceLineFollowRoutine(boolean condition) throws InterruptedException {
+        while (condition) {
+            if (colorSensorL.argb() != 0 && colorSensorR.argb() != 0) {
+                // we squared up with the line
+                side = SideOfLine.CENTRE;
+                moveStraight(MOTOR_TURN_CONSTANT);
+                generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL);
+            }
+            if (colorSensorL.argb() == 0 && colorSensorR.argb() != 0) {
+                // turn right
+                side = SideOfLine.LEFT;
+                L.setPower(MOTOR_TURN_CONSTANT);
+                R.setPower(-MOTOR_TURN_CONSTANT);
+                BL.setPower(MOTOR_TURN_CONSTANT);
+                BR.setPower(-MOTOR_TURN_CONSTANT);
+            }
+            if (colorSensorL.argb() != 0 && colorSensorR.argb() == 0) {
+                side = SideOfLine.RIGHT;
+                L.setPower(-MOTOR_TURN_CONSTANT);
+                R.setPower(MOTOR_TURN_CONSTANT);
+                BL.setPower(-MOTOR_TURN_CONSTANT);
+                BR.setPower(MOTOR_TURN_CONSTANT);
+            }
+
+            if (colorSensorL.argb() == 0 && colorSensorR.argb() == 0) {
+                // were hopelessly lost, use the last known side
+                generator.startTone(ToneGenerator.TONE_SUP_RADIO_NOTAVAIL);
+                switch (side) {
+                    case LEFT:
+                        L.setPower(MOTOR_TURN_CONSTANT);
+                        R.setPower(-MOTOR_TURN_CONSTANT);
+                        BL.setPower(MOTOR_TURN_CONSTANT);
+                        BR.setPower(-MOTOR_TURN_CONSTANT);
+                        break;
+                    case RIGHT:
+                        L.setPower(-MOTOR_TURN_CONSTANT);
+                        R.setPower(MOTOR_TURN_CONSTANT);
+                        BL.setPower(-MOTOR_TURN_CONSTANT);
+                        BR.setPower(MOTOR_TURN_CONSTANT);
+                        break;
+                    case CENTRE:
+                        moveStraight(MOTOR_TURN_CONSTANT);
+                        break;
+                    case DISORIENTED:
+                        if (isRedAlliance()) {
+                            L.setPower(MOTOR_TURN_CONSTANT);
+                            R.setPower(-MOTOR_TURN_CONSTANT);
+                            BL.setPower(MOTOR_TURN_CONSTANT);
+                            BR.setPower(-MOTOR_TURN_CONSTANT);
+                        } else {
+                            L.setPower(-MOTOR_TURN_CONSTANT);
+                            R.setPower(MOTOR_TURN_CONSTANT);
+                            BL.setPower(-MOTOR_TURN_CONSTANT);
+                            BR.setPower(MOTOR_TURN_CONSTANT);
+                        }
+                        telemetry.addLine(String.format(Locale.UK, "Days since Last Crash: %d", 0));
+                        break;
+                }
+            }
+        }
+    }
+
+    public void advanceLineFollowRoutine() throws InterruptedException {
+        if (colorSensorL.argb() != 0 && colorSensorR.argb() != 0) {
+            // we squared up with the line
+            side = SideOfLine.CENTRE;
+            moveStraight(MOTOR_TURN_CONSTANT);
+            generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL);
+        }
+        if (colorSensorL.argb() == 0 && colorSensorR.argb() != 0) {
+            // turn right
+            side = SideOfLine.LEFT;
+            L.setPower(MOTOR_TURN_CONSTANT);
+            R.setPower(-MOTOR_TURN_CONSTANT);
+            BL.setPower(MOTOR_TURN_CONSTANT);
+            BR.setPower(-MOTOR_TURN_CONSTANT);
+        }
+        if (colorSensorL.argb() != 0 && colorSensorR.argb() == 0) {
+            side = SideOfLine.RIGHT;
+            L.setPower(-MOTOR_TURN_CONSTANT);
+            R.setPower(MOTOR_TURN_CONSTANT);
+            BL.setPower(-MOTOR_TURN_CONSTANT);
+            BR.setPower(MOTOR_TURN_CONSTANT);
+        }
+
+        if (colorSensorL.argb() == 0 && colorSensorR.argb() == 0) {
+            // were hopelessly lost, use the last known side
+            generator.startTone(ToneGenerator.TONE_SUP_RADIO_NOTAVAIL);
+            switch (side) {
+                case LEFT:
+                    L.setPower(MOTOR_TURN_CONSTANT);
+                    R.setPower(-MOTOR_TURN_CONSTANT);
+                    BL.setPower(MOTOR_TURN_CONSTANT);
+                    BR.setPower(-MOTOR_TURN_CONSTANT);
+                    break;
+                case RIGHT:
+                    L.setPower(-MOTOR_TURN_CONSTANT);
+                    R.setPower(MOTOR_TURN_CONSTANT);
+                    BL.setPower(-MOTOR_TURN_CONSTANT);
+                    BR.setPower(MOTOR_TURN_CONSTANT);
+                    break;
+                case CENTRE:
+                    moveStraight(MOTOR_TURN_CONSTANT);
+                    break;
+                case DISORIENTED:
+                    if (isRedAlliance()) {
+                        L.setPower(MOTOR_TURN_CONSTANT);
+                        R.setPower(-MOTOR_TURN_CONSTANT);
+                        BL.setPower(MOTOR_TURN_CONSTANT);
+                        BR.setPower(-MOTOR_TURN_CONSTANT);
+                    } else {
+                        L.setPower(-MOTOR_TURN_CONSTANT);
+                        R.setPower(MOTOR_TURN_CONSTANT);
+                        BL.setPower(-MOTOR_TURN_CONSTANT);
+                        BR.setPower(MOTOR_TURN_CONSTANT);
+                    }
+                    telemetry.addLine(String.format(Locale.UK, "Days since Last Crash: %d", 0));
+                    break;
+            }
+        }
+
+    }
+
+    public enum SideOfLine {
+        LEFT,
+        RIGHT,
+        CENTRE,
+        DISORIENTED;
+
+        @Override
+        public String toString() {
+            if (equals(LEFT)) {
+                return "Left";
+            }
+            if (equals(CENTRE)) {
+                return "Centre";
+            }
+            if (equals(RIGHT)) {
+                return "Right";
+            }
+            return "disoriented";
+        }
     }
 }

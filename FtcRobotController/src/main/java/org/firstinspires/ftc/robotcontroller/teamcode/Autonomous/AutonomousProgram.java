@@ -116,6 +116,7 @@ public class AutonomousProgram extends CustomLOpMode {
         r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_INTERGROUP);
         r.haltMotors();
     }
+
     private void findLine() throws InterruptedException {
         // TODO finish adding line finder
         boolean linefound = false;

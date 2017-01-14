@@ -8,25 +8,25 @@ import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 
-import java.nio.DoubleBuffer;
-
 /**
  * Created by sam on 06-Jan-17.
  * It works if it works
  */
-@Autonomous (name = "Autonomous v2", group = "Z not working")
+@Autonomous(name = "Autonomous v2", group = "Z not working")
 public class AutonomousBeacon extends CustomLOpMode {
-    boolean isRedAlliance;
     final double MOTOR_MOVE_CONSTANT = 0.35;
     final int MOTOR_ENCODER_360_SPIN = 5106;
+    boolean isRedAlliance;
     int relposL = 0;
     int relposR = 0;
     Robot r = null;
+
     @Override
-    public void initializeRobot() throws Throwable{
+    public void initializeRobot() throws Throwable {
         r = new Robot(hardwareMap);
         isRedAlliance = GetAllianceMiddleman.isRed();
     }
+
     @Override
     public void runOpMode() throws Throwable {
         initializeRobot();
@@ -34,6 +34,7 @@ public class AutonomousBeacon extends CustomLOpMode {
         delayProgram();
         findLine();
     }
+
     private void findLine() throws InterruptedException {
         if (isRedAlliance) {
             // Turn Left
@@ -77,6 +78,7 @@ public class AutonomousBeacon extends CustomLOpMode {
             }
         }
     }
+
     private void findBeacon() throws InterruptedException {
         //TODO add some code to get to the beacon
         while (r.distanceSensor.getLightDetected() < 0.02) {
