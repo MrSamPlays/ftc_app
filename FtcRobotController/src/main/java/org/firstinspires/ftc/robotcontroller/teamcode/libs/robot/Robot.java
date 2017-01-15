@@ -9,6 +9,7 @@ import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,6 +24,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
  * <p>
@@ -52,6 +54,7 @@ public class Robot extends CustomLOpMode {
     public ServoController servctrl;
     public CRServo mtrsrv;
     public OpticalDistanceSensor distanceSensor;
+    public ModernRoboticsI2cRangeSensor range;
     public ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
     private ElapsedTime period = new ElapsedTime();
     private HardwareMap hwmap;
@@ -98,7 +101,7 @@ public class Robot extends CustomLOpMode {
         Winch = hwmap.dcMotor.get("Winch");
         servctrl = hwmap.servoController.get("Servos");
         // mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
-
+        range = hwmap.get(ModernRoboticsI2cRangeSensor.class, "range");
         // colorSensorL = hwmap.colorSensor.get("colorSensorL");
         colorSensorL = new ModernRoboticsI2cColorSensor(cdim, 0);
         // colorSensorR = hwmap.colorSensor.get("colorSensorR");
@@ -110,6 +113,7 @@ public class Robot extends CustomLOpMode {
         colorSensorL.setI2cAddress(I2cAddr.create8bit(0x3C));
         colorSensorR.setI2cAddress(I2cAddr.create8bit(0x6a));
         beaconFinder.setI2cAddress(I2cAddr.create8bit(0x66));
+        range.enableLed(true);
         distanceSensor = new ModernRoboticsAnalogOpticalDistanceSensor(cdim, 0);
         R.setDirection(DcMotor.Direction.REVERSE);
         BR.setDirection(DcMotor.Direction.REVERSE);
@@ -231,7 +235,6 @@ public class Robot extends CustomLOpMode {
             }
         }
     }
-
     public void moveStraight(double power) {
         L.setPower(power);
         R.setPower(power);

@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode
 import org.firstinspires.ftc.robotcontroller.teamcode.Working;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.sound.SoundPlayer;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
  * Created by sam on 25-Nov-16.
@@ -192,6 +193,7 @@ public class TeleOpProgram extends CustomLOpMode {
             telemetry.addData("Optical distance reading", r.distanceSensor.getLightDetected());
             telemetry.addData("Optical distance reading raw", r.distanceSensor.getRawLightDetected());
             telemetry.addData("Gyro", r.gyro.getHeading());
+            telemetry.addData("Range Sensor Distance", r.range.getDistance(DistanceUnit.CM));
             telemetry.addData("Alliance color", (GetAllianceMiddleman.isRed() ? "Red" : "Blue"));
             telemetry.addData("EncoderL", r.L.getCurrentPosition());
             telemetry.addData("EncoderR", r.R.getCurrentPosition());

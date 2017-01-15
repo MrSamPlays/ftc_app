@@ -57,6 +57,7 @@ public class CustomLOpMode extends OpMode {
      */
     public void runOpMode() throws Throwable {
         // Do not call super.runOpMode. That's a bad idea.
+        initializeRobot();
     }
 
     /**
