@@ -4,12 +4,14 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.support.annotation.MainThread;
 
+import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
 import org.firstinspires.ftc.robotcontroller.teamcode.Working;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
+import org.firstinspires.ftc.robotcontroller.teamcode.libs.sound.SoundPlayer;
 
 /**
  * Created by sam on 25-Nov-16.
@@ -207,7 +209,7 @@ public class TeleOpProgram extends CustomLOpMode {
         FLASHING_1,
         FLASHING_2,
         FLASHING_3,
-        STEADY;
+        STEADY
     }
     boolean reversed = false;
     class Reverser implements Runnable {
@@ -262,7 +264,8 @@ public class TeleOpProgram extends CustomLOpMode {
                     generator.startTone(ToneGenerator.TONE_SUP_RINGTONE);
                 }
                 if (gamepad2.b) {
-                    generator.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);
+                    //generator.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);
+                    SoundPlayer.playSound(hardwareMap.appContext, R.raw.dadadada_dadadadada_dadadadada_dada);
                 }
                 if (gamepad2.x) {
                     switch (mode) {
