@@ -211,6 +211,7 @@ public class TeleOpProgram extends CustomLOpMode {
         FLASHING_3,
         STEADY
     }
+
     boolean reversed = false;
     class Reverser implements Runnable {
         @Override
@@ -266,6 +267,9 @@ public class TeleOpProgram extends CustomLOpMode {
                 if (gamepad2.b) {
                     //generator.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);
                     SoundPlayer.playSound(hardwareMap.appContext, R.raw.dadadada_dadadadada_dadadadada_dada);
+                }
+                if (gamepad2.a) {
+                    SoundPlayer.playSound(hardwareMap.appContext, R.raw.siren);
                 }
                 if (gamepad2.x) {
                     switch (mode) {

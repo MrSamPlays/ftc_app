@@ -132,7 +132,7 @@ public class Robot extends CustomLOpMode {
         gyro.calibrate();
         while (gyro.isCalibrating()) {
             generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 1000);
-            if (timer.seconds() > 5) {
+            if (timer.seconds() > 20) {
                 generator.startTone(ToneGenerator.TONE_SUP_ERROR, 1000);
                 gyroIsWorking = false;
                 // Warn the user that the gyro sensor calibration is taking longer than usual
