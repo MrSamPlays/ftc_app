@@ -347,7 +347,7 @@ public class AutonomousProgram extends CustomLOpMode {
         r.haltMotors();
     }
 
-    private void advanceLineFollowRoutine() throws InterruptedException {
+    public void advanceLineFollowRoutine() throws InterruptedException {
         loop:
         if (r.colorSensorL.argb() != 0 && r.colorSensorR.argb() != 0) {
             // we squared up with the line
@@ -406,10 +406,9 @@ public class AutonomousProgram extends CustomLOpMode {
                     break;
             }
         }
-
     }
 
-    enum SideOfLine {
+    public enum SideOfLine {
         LEFT,
         RIGHT,
         CENTRE,
