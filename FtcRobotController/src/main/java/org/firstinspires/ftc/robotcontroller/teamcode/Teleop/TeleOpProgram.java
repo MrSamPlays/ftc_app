@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.robotcontroller.teamcode.Teleop;
 
 import android.media.AudioManager;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.media.SoundPool;
 import android.media.ToneGenerator;
 import android.support.annotation.MainThread;
 
@@ -270,8 +267,7 @@ public class TeleOpProgram extends CustomLOpMode {
                     generator.startTone(ToneGenerator.TONE_SUP_RINGTONE);
                 }
                 if (gamepad2.b) {
-                    //generator.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);
-                    SoundPlayer.playSound(hardwareMap.appContext, R.raw.dadadada_dadadadada_dadadadada_dada);
+                    generator.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);
                 }
                 if (gamepad2.a) {
                     SoundPlayer.playSound(hardwareMap.appContext, R.raw.siren);

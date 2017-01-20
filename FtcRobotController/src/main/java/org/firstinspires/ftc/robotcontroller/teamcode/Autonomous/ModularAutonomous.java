@@ -10,9 +10,8 @@ import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.util.Locale;
@@ -40,17 +39,21 @@ public class ModularAutonomous extends CustomLOpMode {
         r.cdim.setLED(0, true);
 
         // Read from a file what to do later
-        try (BufferedReader br = new BufferedReader(new FileReader("match_1.autonomous"))) {
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
+        File path = hardwareMap.appContext.getFilesDir();
+        File file = new File(path, "match_1.autonomous");
 
-            while (line != null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
-                line = br.readLine();
-            }
-            program = sb.toString();
+        int length = (int) file.length();
+
+        byte[] bytes = new byte[length];
+
+        FileInputStream in = new FileInputStream(file);
+        try {
+            in.read(bytes);
+        } finally {
+            in.close();
         }
+
+        String contents = new String(bytes);
 
         // Wait until we press start
         waitForStart();
