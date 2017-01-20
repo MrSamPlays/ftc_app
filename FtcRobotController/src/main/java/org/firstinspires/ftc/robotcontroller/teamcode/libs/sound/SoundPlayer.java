@@ -9,7 +9,6 @@ import com.qualcomm.ftcrobotcontroller.R;
 import java.util.HashMap;
 
 public class SoundPlayer {
-    public static final int song = R.raw.dadadada_dadadadada_dadadadada_dada;
     public static final int siren = R.raw.siren;
 
     private static SoundPool soundPool;
@@ -18,10 +17,9 @@ public class SoundPlayer {
     /**
      * Populate the SoundPool
      */
-    public static void initSounds(Context context) {
+    private static void initSounds(Context context) {
         soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 100);
         soundPoolMap = new HashMap(3);
-        soundPoolMap.put(song, soundPool.load(context, R.raw.dadadada_dadadadada_dadadadada_dada, 1));
         soundPoolMap.put(siren, soundPool.load(context, R.raw.siren, 1));
     }
 
