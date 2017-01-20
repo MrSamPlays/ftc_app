@@ -1,8 +1,16 @@
 <h1>Changelog:</h1>
+<p>2.2.2.2</p>
+<p>*Learnt to update changelog more often<br>
+*Fixed Changelog Formatting<br>
+</p>
+<p>2.2.2.0</p>
+<p>+Added Advanced line following routine.<br>
++Added new Alt-Autonomous</p>
 <p>2.2.1.0</p>
-Fixes in beacon routine
+<p>
+Fixes in beacon routine</p>
 <p>2.1.0.0 </p>
-Now Runs beacon routine
+<p>Now Runs beacon routine</p>
 <p>2.0.0.1</p>
 <p>
 Version 2 now ported for four motors.</p>
