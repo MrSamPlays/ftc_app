@@ -19,10 +19,11 @@ import java.util.Locale;
  * Created by sam on 20-Dec-16.
  * Its working I guess
  */
-@Autonomous(name = "Autonomous", group = "not guaranteed to work")
+@Autonomous(name = "Next to corner vortex", group = "not guaranteed to work")
 public class AutonomousProgram extends CustomLOpMode {
-    final double MOTOR_TURN_CONSTANT = 0.25;
-    final double MOTOR_MOVE_CONSTANT = 0.35;
+    final double MOTOR_LINE_FOLLOW_CONSTANT = 0.25;
+    final double MOTOR_TURN_CONSTANT = 0.4;
+    final double MOTOR_MOVE_CONSTANT = 0.5;
     final int MOTOR_ENCODER_360_SPIN = 12527;
     Robot r = new Robot();
     Thread t = null;
@@ -124,7 +125,7 @@ public class AutonomousProgram extends CustomLOpMode {
         int count = 0;
 
         while (!linefound && count < 1) {
-            r.moveStraight(MOTOR_TURN_CONSTANT);
+            r.moveStraight(MOTOR_MOVE_CONSTANT);
             if (r.colorSensorL.argb() != 0 || r.colorSensorR.argb() != 0) {
                 linefound = true;
             }
@@ -155,7 +156,7 @@ public class AutonomousProgram extends CustomLOpMode {
             isRed = r.beaconFinder.red() > 0;
             isBlue = r.beaconFinder.blue() > 0;
             idle();
-        } while (colorRead.time() < 500);
+        } while (colorRead.time() < 2000);
         if (r.isRedAlliance()) {
             if (isRed) {
                 // move on to next beacon
@@ -164,7 +165,7 @@ public class AutonomousProgram extends CustomLOpMode {
                 r.moveBackward(250, 1);
                 r.haltMotors();
                 r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_PING_RING);
-                sleep(5200);
+                sleep(3000);
                 r.moveForward(300, 0.5);
                 sleep(100);
             }
@@ -176,7 +177,7 @@ public class AutonomousProgram extends CustomLOpMode {
                 r.moveBackward(250, 1);
                 r.haltMotors();
                 r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_PING_RING);
-                sleep(5200);
+                sleep(3000);
                 r.moveForward(300, 0.5);
                 sleep(100);
             }
@@ -272,6 +273,7 @@ public class AutonomousProgram extends CustomLOpMode {
 
     private void squareUpWithLine() throws InterruptedException {
         r.resetEncoders();
+
         if (GetAllianceMiddleman.isRed()) {
             // nudge left a little bit
             while (r.R.getCurrentPosition() < 550) {
@@ -291,29 +293,31 @@ public class AutonomousProgram extends CustomLOpMode {
             }
         }
         r.haltMotors();
-        boolean linefound = false;
-        if (GetAllianceMiddleman.isRed()) {
-            // turn left until it sees the white line again
-            while (!linefound) {
-                r.L.setPower(-MOTOR_TURN_CONSTANT);
-                r.R.setPower(MOTOR_TURN_CONSTANT);
-                r.BL.setPower(-MOTOR_TURN_CONSTANT);
-                r.BR.setPower(MOTOR_TURN_CONSTANT);
-                linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
-                idle();
+
+            boolean linefound = false;
+            if (GetAllianceMiddleman.isRed()) {
+                // turn left until it sees the white line again
+                while (!linefound) {
+                    r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.R.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BR.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                    linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
+                    idle();
+                }
+            } else {
+                // Turn right until it sees the white line again
+                while (!linefound) {
+                    r.L.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BL.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
+                    idle();
+                }
             }
-        } else {
-            // Turn right until it sees the white line again
-            while (!linefound) {
-                r.L.setPower(MOTOR_TURN_CONSTANT);
-                r.R.setPower(-MOTOR_TURN_CONSTANT);
-                r.BL.setPower(MOTOR_TURN_CONSTANT);
-                r.BR.setPower(-MOTOR_TURN_CONSTANT);
-                linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
-                idle();
-            }
-        }
-        r.haltMotors();
+            r.haltMotors();
+        if (time.seconds() < 20.0) {
             /*linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
             r.moveStraight(MOTOR_MOVE_CONSTANT);
             if (!linefound) {
@@ -339,10 +343,14 @@ public class AutonomousProgram extends CustomLOpMode {
                     }
                 }
             }*/
-        side = SideOfLine.DISORIENTED;
-        while (r.distanceSensor.getLightDetected() < 0.02) {
-            advanceLineFollowRoutine();
-            idle();
+            side = SideOfLine.DISORIENTED;
+
+            while (r.distanceSensor.getLightDetected() < 0.02) {
+                advanceLineFollowRoutine();
+                idle();
+            }
+        } else {
+            r.moveBackward(4200, 1);
         }
         r.haltMotors();
     }
@@ -352,23 +360,23 @@ public class AutonomousProgram extends CustomLOpMode {
         if (r.colorSensorL.argb() != 0 && r.colorSensorR.argb() != 0) {
             // we squared up with the line
             side = SideOfLine.CENTRE;
-            r.moveStraight(MOTOR_TURN_CONSTANT);
+            r.moveStraight(MOTOR_LINE_FOLLOW_CONSTANT);
             r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL);
         }
         if (r.colorSensorL.argb() == 0 && r.colorSensorR.argb() != 0) {
             // turn right
             side = SideOfLine.LEFT;
-            r.L.setPower(MOTOR_TURN_CONSTANT);
-            r.R.setPower(-MOTOR_TURN_CONSTANT);
-            r.BL.setPower(MOTOR_TURN_CONSTANT);
-            r.BR.setPower(-MOTOR_TURN_CONSTANT);
+            r.L.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+            r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+            r.BL.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+            r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
         }
         if (r.colorSensorL.argb() != 0 && r.colorSensorR.argb() == 0) {
             side = SideOfLine.RIGHT;
-            r.L.setPower(-MOTOR_TURN_CONSTANT);
-            r.R.setPower(MOTOR_TURN_CONSTANT);
-            r.BL.setPower(-MOTOR_TURN_CONSTANT);
-            r.BR.setPower(MOTOR_TURN_CONSTANT);
+            r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+            r.R.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+            r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+            r.BR.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
         }
 
         if (r.colorSensorL.argb() == 0 && r.colorSensorR.argb() == 0) {
@@ -376,31 +384,31 @@ public class AutonomousProgram extends CustomLOpMode {
             r.generator.startTone(ToneGenerator.TONE_SUP_RADIO_NOTAVAIL);
             switch (side) {
                 case LEFT:
-                    r.L.setPower(MOTOR_TURN_CONSTANT);
-                    r.R.setPower(-MOTOR_TURN_CONSTANT);
-                    r.BL.setPower(MOTOR_TURN_CONSTANT);
-                    r.BR.setPower(-MOTOR_TURN_CONSTANT);
+                    r.L.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BL.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
                     break;
                 case RIGHT:
-                    r.L.setPower(-MOTOR_TURN_CONSTANT);
-                    r.R.setPower(MOTOR_TURN_CONSTANT);
-                    r.BL.setPower(-MOTOR_TURN_CONSTANT);
-                    r.BR.setPower(MOTOR_TURN_CONSTANT);
+                    r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.R.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BR.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
                     break;
                 case CENTRE:
-                    r.moveStraight(MOTOR_TURN_CONSTANT);
+                    r.moveStraight(MOTOR_LINE_FOLLOW_CONSTANT);
                     break;
                 case DISORIENTED:
                     if (r.isRedAlliance()) {
-                        r.L.setPower(MOTOR_TURN_CONSTANT);
-                        r.R.setPower(-MOTOR_TURN_CONSTANT);
-                        r.BL.setPower(MOTOR_TURN_CONSTANT);
-                        r.BR.setPower(-MOTOR_TURN_CONSTANT);
+                        r.L.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.BL.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
                     } else {
-                        r.L.setPower(-MOTOR_TURN_CONSTANT);
-                        r.R.setPower(MOTOR_TURN_CONSTANT);
-                        r.BL.setPower(-MOTOR_TURN_CONSTANT);
-                        r.BR.setPower(MOTOR_TURN_CONSTANT);
+                        r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.R.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.BR.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
                     }
                     telemetry.addLine(String.format(Locale.UK, "Days since Last Crash: %d", 0));
                     break;

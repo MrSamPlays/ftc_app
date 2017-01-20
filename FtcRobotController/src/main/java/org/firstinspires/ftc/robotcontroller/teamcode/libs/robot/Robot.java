@@ -14,12 +14,18 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.I2cDeviceImpl;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.hardware.configuration.MotorConfiguration;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
@@ -52,17 +58,22 @@ public class Robot extends CustomLOpMode {
     public ColorSensor colorSensorR; // I2C address 0x6a, physical port 1
     public ColorSensor beaconFinder; // I2C address 0x66, physical port 3
     public ServoController servctrl;
+    I2cDevice rangeDevice;
+    I2cDeviceSynch deviceSynch;
     public CRServo mtrsrv;
     public OpticalDistanceSensor distanceSensor;
     public ModernRoboticsI2cRangeSensor range;
     public ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
     private ElapsedTime period = new ElapsedTime();
     private HardwareMap hwmap;
+    public static final int ENCODER_CLICKS_PER_MOTOR_ROTATION = 1125;
+    public static final double WHEEL_RADIUS_CM = 5.1;
+    public static final long ENCODER_CLICKS_PER_CM = Math.round(WHEEL_RADIUS_CM * 2* Math.PI);
     // private boolean initialized = false;
     public boolean gyroIsWorking = true;
     private float x = 0;
     private float y = 0;
-    private double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)); //The magnitude of the robot from the origin
+    private double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)); // The magnitude of the robot from the origin
     private boolean redAlliance;
     private ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
@@ -101,7 +112,9 @@ public class Robot extends CustomLOpMode {
         Winch = hwmap.dcMotor.get("Winch");
         servctrl = hwmap.servoController.get("Servos");
         // mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
-        range = hwmap.get(ModernRoboticsI2cRangeSensor.class, "range");
+        rangeDevice = new I2cDeviceImpl(cdim,5);
+        deviceSynch = new I2cDeviceSynchImpl(rangeDevice, true);
+        range = new ModernRoboticsI2cRangeSensor(deviceSynch);
         // colorSensorL = hwmap.colorSensor.get("colorSensorL");
         colorSensorL = new ModernRoboticsI2cColorSensor(cdim, 0);
         // colorSensorR = hwmap.colorSensor.get("colorSensorR");

@@ -54,8 +54,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="notification_blurb">You are ready to compete</string>
 
     <!-- Preferences -->
-    <string name="pref_view_logs">View Logs</string>
-    <string name="pref_sound_on_off_title">Sound</string>
+    <string name="pref_view_logs">View The Log</string>
+    <string name="pref_sound_on_off_title">Annoying Sounds</string>
+    <string name="pref_change_wifi_channel">Change LanSchool channel</string>
 
     <!-- Toast messages -->
     <string name="toastWifiConfigurationComplete">Congrats, the configuration is complete!</string>
@@ -65,8 +66,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="toastMessage">This is Yesterday\'s message of the day</string>
     <!-- ??? -->
     <string name="activeConfigCaption">I am an active config caption! :)</string>
-
-    <!-- Options -->
+    <!-- Options Super Secret Settings-->
     <string name="alliance">Current Alliance:</string>
     <string name="blueAlliance">Blue</string>
     <string name="redAlliance">Red</string>

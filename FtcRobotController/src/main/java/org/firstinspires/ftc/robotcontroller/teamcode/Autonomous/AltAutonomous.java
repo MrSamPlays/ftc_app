@@ -3,26 +3,24 @@ package org.firstinspires.ftc.robotcontroller.teamcode.Autonomous;
 import android.media.ToneGenerator;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
-import org.firstinspires.ftc.robotcontroller.teamcode.Working;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /**
  * Created by sam on 15-Jan-17.
  */
-@Autonomous (name = "Alt-Autonomous1")
-@Working
+@Autonomous(name = "Next to the line", group = "Still not guaranteed to work")
 public class AltAutonomous extends CustomLOpMode {
     final double MOTOR_TURN_CONSTANT = 0.25;
     final double MOTOR_MOVE_CONSTANT = 0.35;
     final int MOTOR_ENCODER_360_SPIN = 12527;
     Robot r;
+    SideOfLine side = SideOfLine.DISORIENTED;
+
     @Override
     public void initializeRobot() throws Throwable {
         r = new Robot(hardwareMap);
@@ -35,10 +33,12 @@ public class AltAutonomous extends CustomLOpMode {
         delayProgram();
         KnockBallDown();
     }
-    private void KnockBallDown() throws Throwable{
+
+    private void KnockBallDown() throws Throwable {
         r.resetEncoders();
+        final int TURN_TARGET = 30;
         if (r.isRedAlliance()) {
-            while (r.gyroIsWorking ? r.gyro.getHeading() > 315 || r.gyro.getHeading() < 45 : r.R.getCurrentPosition() < MOTOR_ENCODER_360_SPIN/8) {
+            while (r.gyroIsWorking ? r.gyro.getHeading() > 360 - TURN_TARGET || r.gyro.getHeading() < TURN_TARGET : r.R.getCurrentPosition() < MOTOR_ENCODER_360_SPIN / 8) {
                 r.L.setPower(0);
                 r.R.setPower(MOTOR_TURN_CONSTANT);
                 r.BL.setPower(0);
@@ -46,7 +46,7 @@ public class AltAutonomous extends CustomLOpMode {
                 idle();
             }
         } else {
-            while (r.gyroIsWorking ? r.gyro.getHeading() > 315 || r.gyro.getHeading() < 45 : r.L.getCurrentPosition() < MOTOR_ENCODER_360_SPIN/8) {
+            while (r.gyroIsWorking ? r.gyro.getHeading() > 360 - TURN_TARGET || r.gyro.getHeading() < TURN_TARGET : r.L.getCurrentPosition() < MOTOR_ENCODER_360_SPIN / 8) {
                 r.L.setPower(MOTOR_TURN_CONSTANT);
                 r.R.setPower(0);
                 r.BL.setPower(MOTOR_TURN_CONSTANT);
@@ -54,13 +54,54 @@ public class AltAutonomous extends CustomLOpMode {
                 idle();
             }
         }
-        while (r.range.getDistance(DistanceUnit.CM) > 4.5) {
-            r.moveStraight(MOTOR_MOVE_CONSTANT);
+        r.moveForward(6400, 1);
+    }
+
+    private void findBeacon() throws InterruptedException {
+        while (r.distanceSensor.getLightDetected() < 0.07) {
+            // we need to move toward the beacon
+            advanceLineFollowRoutine();
+            idle();
+        }
+        side = SideOfLine.DISORIENTED;
+        r.haltMotors();
+        ElapsedTime colorRead = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        colorRead.reset();
+        boolean isRed;
+        boolean isBlue;
+        do {
+            isRed = r.beaconFinder.red() > 0;
+            isBlue = r.beaconFinder.blue() > 0;
+            idle();
+        } while (colorRead.time() < 500);
+        if (r.isRedAlliance()) {
+            if (isRed) {
+                // move on to next beacon
+            } else {
+                // hit it again and then move on
+                r.moveBackward(250, 1);
+                r.haltMotors();
+                r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_PING_RING);
+                sleep(5200);
+                r.moveForward(300, 0.5);
+                sleep(100);
+            }
+        } else {
+            if (isBlue) {
+                // move on to the next beacon
+            } else {
+                // hit it again then move on
+                r.moveBackward(250, 1);
+                r.haltMotors();
+                r.generator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_PING_RING);
+                sleep(5200);
+                r.moveForward(300, 0.5);
+                sleep(100);
+            }
         }
     }
-    SideOfLine side;
+
     public void advanceLineFollowRoutine() throws InterruptedException {
-        loop:
         if (r.colorSensorL.argb() != 0 && r.colorSensorR.argb() != 0) {
             // we squared up with the line
             side = SideOfLine.CENTRE;
@@ -120,11 +161,18 @@ public class AltAutonomous extends CustomLOpMode {
         }
     }
 
+    /**
+     * LEFT - To the left of the line
+     * RIGHT - To the Right of the line
+     * CENTRE - in the Centre of the line
+     * DISORIENTED - The Robot has not found the line yet.
+     */
     public enum SideOfLine {
         LEFT,
         RIGHT,
         CENTRE,
         DISORIENTED;
+
         @Override
         public String toString() {
             if (equals(LEFT)) {
