@@ -55,6 +55,9 @@ public class AltAutonomous extends CustomLOpMode {
             }
         }
         r.moveForward(6400, 1);
+        while (r.colorSensorL.argb() == 0 || r.colorSensorR.argb() == 0) {
+            r.moveStraight(1);
+        }
     }
 
     private void findBeacon() throws InterruptedException {

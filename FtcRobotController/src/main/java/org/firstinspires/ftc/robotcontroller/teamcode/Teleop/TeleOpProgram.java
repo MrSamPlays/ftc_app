@@ -264,7 +264,7 @@ public class TeleOpProgram extends CustomLOpMode {
                         e.printStackTrace();
                     }*/
                 if (gamepad1.a) {
-                    generator.startTone(ToneGenerator.TONE_SUP_RINGTONE);
+                    generator.startTone(ToneGenerator.TONE_SUP_ERROR);
                 }
                 if (gamepad2.b) {
                     generator.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);

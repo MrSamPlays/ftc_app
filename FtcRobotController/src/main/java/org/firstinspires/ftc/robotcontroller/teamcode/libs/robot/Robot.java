@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -130,6 +131,7 @@ public class Robot extends CustomLOpMode {
         distanceSensor = new ModernRoboticsAnalogOpticalDistanceSensor(cdim, 0);
         R.setDirection(DcMotor.Direction.REVERSE);
         BR.setDirection(DcMotor.Direction.REVERSE);
+        Winch.setDirection(DcMotor.Direction.REVERSE);
         resetEncoders();
         redAlliance = GetAllianceMiddleman.isRed();
         colorSensorL.enableLed(true);
