@@ -36,7 +36,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
  * <p>
- * I'm too lazy to document this code<br>
+ * I'm too lazy to document this code, its just the robot hardware.<br>
  * </p>
  * <p>
  * Alpha: Shift 24 bits left<br>
@@ -132,7 +132,7 @@ public class Robot extends CustomLOpMode {
         distanceSensor = new ModernRoboticsAnalogOpticalDistanceSensor(cdim, 0);
         R.setDirection(DcMotor.Direction.REVERSE);
         BR.setDirection(DcMotor.Direction.REVERSE);
-        // Winch.setDirection(DcMotor.Direction.REVERSE);
+        Winch.setDirection(DcMotor.Direction.REVERSE);
         resetEncoders();
         redAlliance = GetAllianceMiddleman.isRed();
         colorSensorL.enableLed(true);

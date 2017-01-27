@@ -25,7 +25,11 @@ public class TeleOpProgram extends CustomLOpMode {
     ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
     boolean xPressed = false;
     boolean yPressed = false;
+    boolean rTriggerPressed;
+    boolean lTriggerPressed;
+    boolean isTriggerPressed;
     Robot r = new Robot();
+    MovementSpeed s;
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -43,13 +47,27 @@ public class TeleOpProgram extends CustomLOpMode {
             }
         }
     };
+    enum MovementSpeed {;
+        final double SLOW = 0.25,
+        MEDIUM = 0.5,
+        FAST = 0.75,
+        VERY_FAST = 1;
+    }
     Thread t = new Thread(runnable);
     Runnable driveL = new Runnable() {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                r.L.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y/3 : -gamepad1.left_stick_y);
-                r.BL.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y/3 : -gamepad1.left_stick_y);
+                if (!isTriggerPressed) {
+                    r.L.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y / 3 : -gamepad1.left_stick_y);
+                    r.BL.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y / 3 : -gamepad1.left_stick_y);
+                } else {
+                    if (rTriggerPressed) {
+                        r.moveStraight(gamepad1.right_trigger);
+                    } else if (lTriggerPressed) {
+                        r.moveStraight(-gamepad1.left_trigger);
+                    }
+                }
             }
         }
     };
@@ -57,8 +75,10 @@ public class TeleOpProgram extends CustomLOpMode {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                r.R.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y/3 : -gamepad1.right_stick_y);
-                r.BR.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y/3 : -gamepad1.right_stick_y);
+                if (!isTriggerPressed) {
+                    r.R.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y / 3 : -gamepad1.right_stick_y);
+                    r.BR.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y / 3 : -gamepad1.right_stick_y);
+                }
             }
         }
     };
@@ -72,20 +92,19 @@ public class TeleOpProgram extends CustomLOpMode {
     };
     FlashMode mode = FlashMode.OFF;
     Runnable flasher = new Runnable() {
-
         @Override
         public void run() {
             while (opModeIsActive()) {
                 /*switch (mode) {
                     *//**
-                     * Led off
-                     *//*
+                 * Led off
+                 *//*
                     case OFF:
                         r.beaconFinder.enableLed(false);
                         break;
                     *//**
-                     * LED on
-                     *//*
+                 * LED on
+                 *//*
                     case STEADY:
                     default:
                         r.beaconFinder.enableLed(true);
@@ -96,20 +115,19 @@ public class TeleOpProgram extends CustomLOpMode {
                      * LED Pulse
                      */
                     case FLASHING_1:
+                        r.beaconFinder.enableLed(true);
+                        try {
+                            sleep(500);
+                        } catch (Exception e) {
 
-                            r.beaconFinder.enableLed(true);
-                            try {
-                                sleep(500);
-                            } catch (Exception e) {
+                        }
+                        r.beaconFinder.enableLed(false);
+                        try {
+                            sleep(500);
+                            idle();
+                        } catch (Exception e) {
 
-                            }
-                            r.beaconFinder.enableLed(false);
-                            try {
-                                sleep(500);
-                                idle();
-                            } catch (Exception e) {
-
-                            }
+                        }
                         break;
                     /**
                      * LED Heartbeat
@@ -166,6 +184,7 @@ public class TeleOpProgram extends CustomLOpMode {
     Thread flash = new Thread(flasher);
     Thread teleOpLifter = new Thread(wincher);
     Thread triggered = new Thread(new TriggerStraight());
+    boolean reversed = false;
 
     @Override
     @MainThread
@@ -197,6 +216,7 @@ public class TeleOpProgram extends CustomLOpMode {
             telemetry.addData("Flash pattern", mode);
             telemetry.update();
             idle();
+            isTriggerPressed = lTriggerPressed ^ rTriggerPressed;
         }
         t = null;
         teleOpL = null;
@@ -214,7 +234,6 @@ public class TeleOpProgram extends CustomLOpMode {
         STEADY
     }
 
-    boolean reversed = false;
     class Reverser implements Runnable {
         @Override
         public void run() {
@@ -232,26 +251,24 @@ public class TeleOpProgram extends CustomLOpMode {
             }
         }
     }
+
     class TriggerStraight implements Runnable {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_y == 0) {
-                    if (gamepad1.left_trigger != 0 && gamepad1.right_trigger == 0) {
-                        r.L.setPower(-gamepad1.left_trigger);
-                        r.R.setPower(-gamepad1.left_trigger);
-                        r.BL.setPower(-gamepad1.left_trigger);
-                        r.BR.setPower(-gamepad1.left_trigger);
-                    } else if (gamepad1.left_trigger == 0 && gamepad1.right_trigger != 0) {
-                        r.L.setPower(gamepad1.right_trigger);
-                        r.R.setPower(gamepad1.right_trigger);
-                        r.BL.setPower(gamepad1.right_trigger);
-                        r.BR.setPower(gamepad1.right_trigger);
-                    }
+                if (gamepad1.left_trigger != 0 && gamepad1.right_trigger == 0) {
+                    lTriggerPressed = true;
+                    rTriggerPressed = false;
+                } else if (gamepad1.left_trigger == 0 && gamepad1.right_trigger != 0) {
+                    rTriggerPressed = true;
+                    lTriggerPressed = false;
+                } else {
+                    lTriggerPressed = rTriggerPressed = false;
                 }
             }
         }
     }
+
     class BMer implements Runnable {
         private boolean done;
 
