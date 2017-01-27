@@ -25,6 +25,9 @@ public class TeleOpProgram extends CustomLOpMode {
     ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
     boolean xPressed = false;
     boolean yPressed = false;
+
+    boolean isTriggerActive = false;
+
     Robot r = new Robot();
     Runnable runnable = new Runnable() {
         @Override
@@ -48,8 +51,16 @@ public class TeleOpProgram extends CustomLOpMode {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                r.L.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y/3 : -gamepad1.left_stick_y);
-                r.BL.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y/3 : -gamepad1.left_stick_y);
+                if (!isTriggerActive) {
+                    r.L.setPower(gamepad1.left_bumper ? gamepad1.left_stick_y / 3 : -gamepad1.left_stick_y);
+                    r.BL.setPower(gamepad1.left_bumper ? gamepad1.left_stick_y / 3 : -gamepad1.left_stick_y);
+                }
+
+                try {
+                    idle();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
@@ -57,8 +68,16 @@ public class TeleOpProgram extends CustomLOpMode {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                r.R.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y/3 : -gamepad1.right_stick_y);
-                r.BR.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y/3 : -gamepad1.right_stick_y);
+                if (!isTriggerActive) {
+                    r.R.setPower(gamepad1.left_bumper ? gamepad1.right_stick_y / 3 : -gamepad1.right_stick_y);
+                    r.BR.setPower(gamepad1.left_bumper ? gamepad1.right_stick_y / 3 : -gamepad1.right_stick_y);
+                }
+
+                try {
+                    idle();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
@@ -66,7 +85,13 @@ public class TeleOpProgram extends CustomLOpMode {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                r.Winch.setPower(-gamepad2.left_stick_y);
+                r.Winch.setPower(gamepad2.left_stick_y);
+
+                try {
+                    idle();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
@@ -237,6 +262,7 @@ public class TeleOpProgram extends CustomLOpMode {
         public void run() {
             while (opModeIsActive()) {
                 if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_y == 0) {
+                    isTriggerActive = true;
                     if (gamepad1.left_trigger != 0 && gamepad1.right_trigger == 0) {
                         r.L.setPower(-gamepad1.left_trigger);
                         r.R.setPower(-gamepad1.left_trigger);
@@ -248,10 +274,19 @@ public class TeleOpProgram extends CustomLOpMode {
                         r.BL.setPower(gamepad1.right_trigger);
                         r.BR.setPower(gamepad1.right_trigger);
                     }
+                } else {
+                    isTriggerActive = false;
+                }
+
+                try {
+                    idle();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
+
     class BMer implements Runnable {
         private boolean done;
 
