@@ -11,10 +11,10 @@ import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
 import java.util.Locale;
 
 /**
- * Created by sam on 15-Jan-17.
+ * Created by sam on 22/01/2017.
  */
-@Autonomous(name = "Next to the line", group = "Still not guaranteed to work")
-public class AltAutonomous extends CustomLOpMode {
+@Autonomous (name = "Centre")
+public class AltAutonomousII extends CustomLOpMode {
     final double MOTOR_TURN_CONSTANT = 0.25;
     final double MOTOR_MOVE_CONSTANT = 0.35;
     final int MOTOR_ENCODER_360_SPIN = 12527;
@@ -37,28 +37,11 @@ public class AltAutonomous extends CustomLOpMode {
     private void KnockBallDown() throws Throwable {
         r.resetEncoders();
         final int TURN_TARGET = 30;
-        if (r.isRedAlliance()) {
-            while (r.gyroIsWorking ? r.gyro.getHeading() > 360 - TURN_TARGET || r.gyro.getHeading() < TURN_TARGET : r.R.getCurrentPosition() < MOTOR_ENCODER_360_SPIN / 8) {
-                r.L.setPower(0);
-                r.R.setPower(MOTOR_TURN_CONSTANT);
-                r.BL.setPower(0);
-                r.BR.setPower(MOTOR_TURN_CONSTANT);
-                idle();
-            }
-        } else {
-            while (r.gyroIsWorking ? r.gyro.getHeading() > 360 - TURN_TARGET || r.gyro.getHeading() < TURN_TARGET : r.L.getCurrentPosition() < MOTOR_ENCODER_360_SPIN / 8) {
-                r.L.setPower(MOTOR_TURN_CONSTANT);
-                r.R.setPower(0);
-                r.BL.setPower(MOTOR_TURN_CONSTANT);
-                r.BR.setPower(0);
-                idle();
-            }
-        }
-        r.moveForward(6400, 1);
-        while (r.distanceSensor.getLightDetected() < 0.02) {
+        while (r.isRedAlliance() ? r.colorSensorR.red() == 0 || r.colorSensorL.red() == 0: r.colorSensorR.blue() == 0 || r.colorSensorL.blue() == 0) {
             r.moveStraight(1);
             idle();
         }
+        r.haltMotors();
     }
 
     private void findBeacon() throws InterruptedException {
@@ -105,7 +88,7 @@ public class AltAutonomous extends CustomLOpMode {
         }
     }
 
-    public void advanceLineFollowRoutine() throws InterruptedException {
+    private void advanceLineFollowRoutine() throws InterruptedException {
         if (r.colorSensorL.argb() != 0 && r.colorSensorR.argb() != 0) {
             // we squared up with the line
             side = SideOfLine.CENTRE;
@@ -171,7 +154,7 @@ public class AltAutonomous extends CustomLOpMode {
      * CENTRE - in the Centre of the line
      * DISORIENTED - The Robot has not found the line yet.
      */
-    public enum SideOfLine {
+    private enum SideOfLine {
         LEFT,
         RIGHT,
         CENTRE,

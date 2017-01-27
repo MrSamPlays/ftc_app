@@ -48,8 +48,8 @@ public class TeleOpProgram extends CustomLOpMode {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                r.L.setPower(-gamepad1.left_stick_y);
-                r.BL.setPower(-gamepad1.left_stick_y);
+                r.L.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y/3 : -gamepad1.left_stick_y);
+                r.BL.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y/3 : -gamepad1.left_stick_y);
             }
         }
     };
@@ -57,8 +57,8 @@ public class TeleOpProgram extends CustomLOpMode {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                r.R.setPower(-gamepad1.right_stick_y);
-                r.BR.setPower(-gamepad1.right_stick_y);
+                r.R.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y/3 : -gamepad1.right_stick_y);
+                r.BR.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y/3 : -gamepad1.right_stick_y);
             }
         }
     };

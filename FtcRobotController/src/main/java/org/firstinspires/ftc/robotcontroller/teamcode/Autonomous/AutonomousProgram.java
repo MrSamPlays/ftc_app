@@ -3,6 +3,7 @@ package org.firstinspires.ftc.robotcontroller.teamcode.Autonomous;
 import android.media.ToneGenerator;
 import android.os.Environment;
 
+import com.google.blocks.BuildConfig;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -21,9 +22,16 @@ import java.util.Locale;
  */
 @Autonomous(name = "Next to corner vortex", group = "not guaranteed to work")
 public class AutonomousProgram extends CustomLOpMode {
-    final double MOTOR_LINE_FOLLOW_CONSTANT = 0.25;
     final double MOTOR_TURN_CONSTANT = 0.4;
     final double MOTOR_MOVE_CONSTANT = 0.5;
+    /**
+     * Line follow constant(l) - skew constant(s) > 0 - Robot does point turn
+     * l - s == 0 - Robot centre of rotation is on stationary wheel
+     * L - sc < 0 - Robot curves in large arc
+     * L == 2s - Robot moves straight. don't want that happening
+     */
+    final double MOTOR_LINE_FOLLOW_CONSTANT = 0.25;
+    final double SKEW_CONSTANT = 0.2;
     final int MOTOR_ENCODER_360_SPIN = 12527;
     Robot r = new Robot();
     Thread t = null;
@@ -37,7 +45,6 @@ public class AutonomousProgram extends CustomLOpMode {
         r.initializeRobot(hardwareMap);
         r.beaconFinder.enableLed(false);
         t = new Thread(new RunThread()); // comment out for telemetry only.
-
         r.cdim.setLED(0, true);
         waitForStart();
 
@@ -52,9 +59,13 @@ public class AutonomousProgram extends CustomLOpMode {
         findLine();
         // followLine();
         findBeacon();
-        prepareSecondBeacon();
-        goToSecondBeacon();
-        squareUpWithLine();
+        if (time.time() < 15000) {
+            prepareSecondBeacon();
+            goToSecondBeacon();
+            squareUpWithLine();
+        } else {
+            goToCornerVortexRamp();
+        }
         while (opModeIsActive()) {
             idle();
         }
@@ -141,7 +152,7 @@ public class AutonomousProgram extends CustomLOpMode {
     }
 
     private void findBeacon() throws InterruptedException {
-        while (r.distanceSensor.getLightDetected() < 0.07) {
+        while (r.distanceSensor.getLightDetected() < 0.09) {
             // we need to move toward the beacon
             advanceLineFollowRoutine();
             idle();
@@ -183,58 +194,33 @@ public class AutonomousProgram extends CustomLOpMode {
             }
         }
     }
-    /*
-    private void followLine() throws InterruptedException {
+    private void goToCornerVortexRamp() throws InterruptedException {
         r.resetEncoders();
-        while (r.distanceSensor.getLightDetected() < 0.05 && opModeIsActive()) {
-            if (r.colorSensorL.argb() > 0x3030304 && r.colorSensorR.argb() == 0x00) {
-                if (r.gyro.getHeading() > 10 && r.gyro.getHeading() < 90) {
-                    r.L.setPower(0);
-                    r.R.setPower(MOTOR_MOVE_CONSTANT);
-                    r.BL.setPower(0);
-                    r.BR.setPower(MOTOR_MOVE_CONSTANT);
-                    while (r.gyro.getHeading() > 0 && r.gyro.getHeading() < 90) {
-                        telemetry.update();
-                        idle();
-                    }
-                    continue;
-                }
-                r.L.setPower(MOTOR_MOVE_CONSTANT);
-                r.R.setPower(0);
-                r.BL.setPower(MOTOR_MOVE_CONSTANT);
-                r.BR.setPower(0);
-            } else if (r.colorSensorL.argb() == 0x00 && r.colorSensorR.argb() > 0x3030304) {
-                if (r.gyro.getHeading() < 350 && r.gyro.getHeading() > 270) {
-                    r.L.setPower(MOTOR_MOVE_CONSTANT);
-                    r.R.setPower(0);
-                    r.BL.setPower(MOTOR_MOVE_CONSTANT);
-                    r.BR.setPower(0);
-                    while (r.gyro.getHeading() > 270 && r.gyro.getHeading() < 360) {
-                        telemetry.update();
-                        idle();
-                    }
-                    continue;
-                }
+        r.moveBackward((int) r.ENCODER_CLICKS_PER_CM * 65, 1);
+        if (r.isRedAlliance()) {
+            while (r.gyroIsWorking ? r.gyro.getHeading() > 180 : r.R.getCurrentPosition() <= MOTOR_ENCODER_360_SPIN / 4) {
                 r.L.setPower(0);
-                r.R.setPower(MOTOR_MOVE_CONSTANT);
+                r.R.setPower(MOTOR_TURN_CONSTANT);
                 r.BL.setPower(0);
-                r.BR.setPower(MOTOR_MOVE_CONSTANT);
-            } else { //if (r.colorSensorL.argb() >= 0x3030304 && r.colorSensorR.argb() >= 0x3030304) {
-                r.L.setPower(MOTOR_MOVE_CONSTANT / 2);
-                r.R.setPower(MOTOR_MOVE_CONSTANT / 2);
-                r.BL.setPower(MOTOR_MOVE_CONSTANT / 2);
-                r.BR.setPower(MOTOR_MOVE_CONSTANT / 2);
+                r.BR.setPower(MOTOR_TURN_CONSTANT);
+                idle();
+            }
+        } else {
+            while (r.gyroIsWorking ? r.gyro.getHeading() < 180 : r.L.getCurrentPosition() <= MOTOR_ENCODER_360_SPIN / 4) {
+                r.L.setPower(MOTOR_TURN_CONSTANT);
+                r.R.setPower(0);
+                r.BL.setPower(MOTOR_TURN_CONSTANT);
+                r.BR.setPower(0);
+                idle();
             }
         }
-        r.generator.startTone(ToneGenerator.TONE_CDMA_HIGH_SS_2);
-        r.L.setPower(0);
-        r.R.setPower(0);
-        r.BL.setPower(0);
-        r.BR.setPower(0);
-        sleep(400);
-        r.generator.startTone(ToneGenerator.TONE_CDMA_HIGH_SS_2);
-        idle();
-    }*/
+        r.haltMotors();
+        while (r.isRedAlliance() ? r.colorSensorL.red() == 0 || r.colorSensorR.red() == 0 : r.colorSensorL.blue() == 0 || r.colorSensorR.blue() == 0) {
+            r.moveStraight(1);
+            idle();
+        }
+        r.haltMotors();
+    }
 
     private void prepareSecondBeacon() throws InterruptedException {
         r.resetEncoders();
@@ -294,55 +280,30 @@ public class AutonomousProgram extends CustomLOpMode {
         }
         r.haltMotors();
 
-            boolean linefound = false;
-            if (GetAllianceMiddleman.isRed()) {
-                // turn left until it sees the white line again
-                while (!linefound) {
-                    r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
-                    r.R.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                    r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
-                    r.BR.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                    linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
-                    idle();
-                }
-            } else {
-                // Turn right until it sees the white line again
-                while (!linefound) {
-                    r.L.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                    r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
-                    r.BL.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                    r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
-                    linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
-                    idle();
-                }
+        boolean linefound = false;
+        if (GetAllianceMiddleman.isRed()) {
+            // turn left until it sees the white line again
+            while (!linefound) {
+                r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                r.R.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                r.BR.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
+                idle();
             }
-            r.haltMotors();
-        if (time.seconds() < 20.0) {
-            /*linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
-            r.moveStraight(MOTOR_MOVE_CONSTANT);
-            if (!linefound) {
-                if (GetAllianceMiddleman.isRed()) {
-                    if (GetAllianceMiddleman.isRed()) {
-                        // turn left until it sees the white line again
-                        while (!linefound) {
-                            r.L.setPower(-MOTOR_MOVE_CONSTANT);
-                            r.R.setPower(MOTOR_MOVE_CONSTANT);
-                            r.BL.setPower(-MOTOR_MOVE_CONSTANT);
-                            r.BR.setPower(MOTOR_MOVE_CONSTANT);
-                            linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
-                        }
-                    } else {
-                        // Turn right until it sees the white line again
-                        while (!linefound) {
-                            r.L.setPower(MOTOR_MOVE_CONSTANT);
-                            r.R.setPower(-MOTOR_MOVE_CONSTANT);
-                            r.BL.setPower(MOTOR_MOVE_CONSTANT);
-                            r.BR.setPower(-MOTOR_MOVE_CONSTANT);
-                            linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
-                        }
-                    }
-                }
-            }*/
+        } else {
+            // Turn right until it sees the white line again
+            while (!linefound) {
+                r.L.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                r.BL.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
+                r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                linefound = r.colorSensorL.argb() > 0 || r.colorSensorR.argb() > 0;
+                idle();
+            }
+        }
+        r.haltMotors();
+        if (time.time() < 20000) {
             side = SideOfLine.DISORIENTED;
 
             while (r.distanceSensor.getLightDetected() < 0.02) {
@@ -355,8 +316,7 @@ public class AutonomousProgram extends CustomLOpMode {
         r.haltMotors();
     }
 
-    public void advanceLineFollowRoutine() throws InterruptedException {
-        loop:
+    private void advanceLineFollowRoutine() throws InterruptedException {
         if (r.colorSensorL.argb() != 0 && r.colorSensorR.argb() != 0) {
             // we squared up with the line
             side = SideOfLine.CENTRE;
@@ -367,15 +327,15 @@ public class AutonomousProgram extends CustomLOpMode {
             // turn right
             side = SideOfLine.LEFT;
             r.L.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-            r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+            r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
             r.BL.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-            r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+            r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
         }
         if (r.colorSensorL.argb() != 0 && r.colorSensorR.argb() == 0) {
             side = SideOfLine.RIGHT;
-            r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+            r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
             r.R.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-            r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+            r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
             r.BR.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
         }
 
@@ -385,14 +345,14 @@ public class AutonomousProgram extends CustomLOpMode {
             switch (side) {
                 case LEFT:
                     r.L.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                    r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
                     r.BL.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                    r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
                     break;
                 case RIGHT:
-                    r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
                     r.R.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                    r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                    r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
                     r.BR.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
                     break;
                 case CENTRE:
@@ -401,13 +361,13 @@ public class AutonomousProgram extends CustomLOpMode {
                 case DISORIENTED:
                     if (r.isRedAlliance()) {
                         r.L.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                        r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.R.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
                         r.BL.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                        r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.BR.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
                     } else {
-                        r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.L.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
                         r.R.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
-                        r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT);
+                        r.BL.setPower(-MOTOR_LINE_FOLLOW_CONSTANT + SKEW_CONSTANT);
                         r.BR.setPower(MOTOR_LINE_FOLLOW_CONSTANT);
                     }
                     telemetry.addLine(String.format(Locale.UK, "Days since Last Crash: %d", 0));

@@ -10,6 +10,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceS
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -64,12 +65,12 @@ public class Robot extends CustomLOpMode {
     public CRServo mtrsrv;
     public OpticalDistanceSensor distanceSensor;
     public ModernRoboticsI2cRangeSensor range;
-    public ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+    public ToneGenerator generator = new ToneGenerator(AudioManager.STREAM_MUSIC, 200);
     private ElapsedTime period = new ElapsedTime();
     private HardwareMap hwmap;
-    public static final int ENCODER_CLICKS_PER_MOTOR_ROTATION = 1125;
-    public static final double WHEEL_RADIUS_CM = 5.1;
-    public static final long ENCODER_CLICKS_PER_CM = Math.round(WHEEL_RADIUS_CM * 2* Math.PI);
+    public final int ENCODER_CLICKS_PER_MOTOR_ROTATION = 1125;
+    public final double WHEEL_RADIUS_CM = 5.1;
+    public final long ENCODER_CLICKS_PER_CM = Math.round(WHEEL_RADIUS_CM * 2* Math.PI);
     // private boolean initialized = false;
     public boolean gyroIsWorking = true;
     private float x = 0;
@@ -131,7 +132,7 @@ public class Robot extends CustomLOpMode {
         distanceSensor = new ModernRoboticsAnalogOpticalDistanceSensor(cdim, 0);
         R.setDirection(DcMotor.Direction.REVERSE);
         BR.setDirection(DcMotor.Direction.REVERSE);
-        Winch.setDirection(DcMotor.Direction.REVERSE);
+        // Winch.setDirection(DcMotor.Direction.REVERSE);
         resetEncoders();
         redAlliance = GetAllianceMiddleman.isRed();
         colorSensorL.enableLed(true);
