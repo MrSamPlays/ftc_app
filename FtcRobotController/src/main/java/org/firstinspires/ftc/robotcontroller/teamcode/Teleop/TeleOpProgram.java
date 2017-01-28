@@ -115,8 +115,8 @@ public class TeleOpProgram extends CustomLOpMode {
         public synchronized void run() {
             while (opModeIsActive()) {
                 if (!isTriggerPressed) {
-                    r.R.setPower(Range.clip(-gamepad1.right_stick_y, -topSpeed, topSpeed));
-                    r.BR.setPower(Range.clip(-gamepad1.right_stick_y, -topSpeed, topSpeed));
+                    r.R.setPower(Range.clip((gamepad1.right_bumper ? gamepad1.right_stick_y : -gamepad1.right_stick_y), -topSpeed, topSpeed));
+                    r.BR.setPower(Range.clip((gamepad1.right_bumper ? gamepad1.right_stick_y : -gamepad1.right_stick_y), -topSpeed, topSpeed));
                 }
             }
         }
