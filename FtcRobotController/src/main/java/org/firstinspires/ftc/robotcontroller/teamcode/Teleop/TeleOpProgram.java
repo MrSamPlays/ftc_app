@@ -6,6 +6,7 @@ import android.support.annotation.MainThread;
 
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcontroller.internal.GetAllianceMiddleman;
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
@@ -28,8 +29,9 @@ public class TeleOpProgram extends CustomLOpMode {
     boolean rTriggerPressed;
     boolean lTriggerPressed;
     boolean isTriggerPressed;
+    double topSpeed;
     Robot r = new Robot();
-    MovementSpeed s;
+    MovementSpeed s = MovementSpeed.VERY_FAST;
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -47,21 +49,16 @@ public class TeleOpProgram extends CustomLOpMode {
             }
         }
     };
-    enum MovementSpeed {;
-        final double SLOW = 0.25,
-        MEDIUM = 0.5,
-        FAST = 0.75,
-        VERY_FAST = 1;
-    }
     Thread t = new Thread(runnable);
     Runnable driveL = new Runnable() {
         @Override
-        public void run() {
+        public synchronized void run() {
             while (opModeIsActive()) {
                 if (!isTriggerPressed) {
-                    r.L.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y / 3 : -gamepad1.left_stick_y);
-                    r.BL.setPower(gamepad1.left_bumper ? -gamepad1.left_stick_y / 3 : -gamepad1.left_stick_y);
-                } else {
+                    r.L.setPower(Range.clip(-gamepad1.left_stick_y, -topSpeed, topSpeed));
+                    r.BL.setPower(Range.clip(-gamepad1.left_stick_y, -topSpeed, topSpeed));
+                }
+                if (isTriggerPressed) {
                     if (rTriggerPressed) {
                         r.moveStraight(gamepad1.right_trigger);
                     } else if (lTriggerPressed) {
@@ -71,13 +68,55 @@ public class TeleOpProgram extends CustomLOpMode {
             }
         }
     };
-    Runnable driveR = new Runnable() {
+    Thread throttle = new Thread(new Runnable() {
         @Override
         public void run() {
             while (opModeIsActive()) {
+                switch (s) {
+                    case SLOW:
+                        topSpeed = 0.25;
+                        break;
+                    case MEDIUM:
+                        topSpeed = 0.5;
+                        break;
+                    case FAST:
+                        topSpeed = 0.75;
+                        break;
+                    case VERY_FAST:
+                        topSpeed = 1;
+                        break;
+                }
+                if (gamepad1.left_bumper) {
+                    switchState();
+                    while (gamepad1.left_bumper) {
+                        try {
+                            idle();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+        public void switchState() {
+            if (s == MovementSpeed.SLOW) {
+                s = MovementSpeed.MEDIUM;
+            } else if (s == MovementSpeed.MEDIUM) {
+                s = MovementSpeed.FAST;
+            } else if (s == MovementSpeed.FAST) {
+                s = MovementSpeed.VERY_FAST;
+            } else if (s == MovementSpeed.VERY_FAST) {
+                s = MovementSpeed.SLOW;
+            }
+        }
+    });
+    Runnable driveR = new Runnable() {
+        @Override
+        public synchronized void run() {
+            while (opModeIsActive()) {
                 if (!isTriggerPressed) {
-                    r.R.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y / 3 : -gamepad1.right_stick_y);
-                    r.BR.setPower(gamepad1.left_bumper ? -gamepad1.right_stick_y / 3 : -gamepad1.right_stick_y);
+                    r.R.setPower(Range.clip(-gamepad1.right_stick_y, -topSpeed, topSpeed));
+                    r.BR.setPower(Range.clip(-gamepad1.right_stick_y, -topSpeed, topSpeed));
                 }
             }
         }
@@ -195,9 +234,10 @@ public class TeleOpProgram extends CustomLOpMode {
         teleOpL.start();
         teleOpR.start();
         teleOpBM.start();
+        throttle.start();
         flash.start();
-        teleOpLifter.start();
         triggered.start();
+        teleOpLifter.start();
         while (opModeIsActive()) {
             // resetEncoders();
             telemetry.addData("Left Color", Integer.toHexString(r.colorSensorL.argb()));
@@ -214,6 +254,7 @@ public class TeleOpProgram extends CustomLOpMode {
             telemetry.addData("EncoderL", r.L.getCurrentPosition());
             telemetry.addData("EncoderR", r.R.getCurrentPosition());
             telemetry.addData("Flash pattern", mode);
+            telemetry.addData("Movement speed", s);
             telemetry.update();
             idle();
             isTriggerPressed = lTriggerPressed ^ rTriggerPressed;
@@ -224,6 +265,13 @@ public class TeleOpProgram extends CustomLOpMode {
         teleOpBM = null;
         teleOpLifter = null;
         triggered = null;
+    }
+
+    enum MovementSpeed {
+        SLOW,
+        MEDIUM,
+        FAST,
+        VERY_FAST
     }
 
     enum FlashMode {
