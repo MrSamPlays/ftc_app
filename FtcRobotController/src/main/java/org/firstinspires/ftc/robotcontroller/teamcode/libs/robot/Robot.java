@@ -114,11 +114,11 @@ public class Robot extends CustomLOpMode {
         Winch = hwmap.dcMotor.get("Winch");
         servctrl = hwmap.servoController.get("Servos");
         // mtrsrv = new CRServoImpl(servctrl, 1, CRServo.Direction.REVERSE);
-        rangeDevice = new I2cDeviceImpl(cdim,5);
+        rangeDevice = new I2cDeviceImpl(cdim,0);
         deviceSynch = new I2cDeviceSynchImpl(rangeDevice, true);
         range = new ModernRoboticsI2cRangeSensor(deviceSynch);
         // colorSensorL = hwmap.colorSensor.get("colorSensorL");
-        colorSensorL = new ModernRoboticsI2cColorSensor(cdim, 0);
+        colorSensorL = new ModernRoboticsI2cColorSensor(cdim, 5);
         // colorSensorR = hwmap.colorSensor.get("colorSensorR");
         colorSensorR = new ModernRoboticsI2cColorSensor(cdim, 1);
         // gyro = hwmap.gyroSensor.get("gyro");
@@ -127,7 +127,7 @@ public class Robot extends CustomLOpMode {
         beaconFinder = new ModernRoboticsI2cColorSensor(cdim, 3);
         colorSensorL.setI2cAddress(I2cAddr.create8bit(0x3C));
         colorSensorR.setI2cAddress(I2cAddr.create8bit(0x6a));
-        beaconFinder.setI2cAddress(I2cAddr.create8bit(0x66));
+        beaconFinder.setI2cAddress(I2cAddr.create8bit(0x6e));
         range.enableLed(true);
         distanceSensor = new ModernRoboticsAnalogOpticalDistanceSensor(cdim, 0);
         R.setDirection(DcMotor.Direction.REVERSE);
