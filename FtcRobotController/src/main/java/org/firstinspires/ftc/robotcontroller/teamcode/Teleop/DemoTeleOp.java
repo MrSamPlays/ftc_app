@@ -4,13 +4,12 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.support.annotation.MainThread;
 
-import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcontroller.teamcode.CustomOpMode.CustomLOpMode;
 import org.firstinspires.ftc.robotcontroller.teamcode.Working;
 import org.firstinspires.ftc.robotcontroller.teamcode.libs.robot.Robot;
-import org.firstinspires.ftc.robotcontroller.teamcode.libs.sound.SoundPlayer;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name = "Demo Program", group = "Working")
@@ -24,6 +23,8 @@ public class DemoTeleOp extends CustomLOpMode {
     private final double SPEED_MULTIPLIER = 0.75;
     private Robot robot = new Robot();
 
+    private Gamepad master = gamepad1;
+
     /**
      * Left stick control runnable
      */
@@ -32,14 +33,14 @@ public class DemoTeleOp extends CustomLOpMode {
         public synchronized void run() {
             while (opModeIsActive()) {
                 if (!isTriggerPressed) {
-                    robot.L.setPower(-gamepad1.left_stick_y * SPEED_MULTIPLIER);
-                    robot.BL.setPower(-gamepad1.left_stick_y * SPEED_MULTIPLIER);
+                    robot.L.setPower(-master.left_stick_y * SPEED_MULTIPLIER);
+                    robot.BL.setPower(-master.left_stick_y * SPEED_MULTIPLIER);
                 }
                 if (isTriggerPressed) {
                     if (rTriggerPressed) {
-                        robot.moveStraight(gamepad1.right_trigger);
+                        robot.moveStraight(master.right_trigger);
                     } else if (lTriggerPressed) {
-                        robot.moveStraight(-gamepad1.left_trigger);
+                        robot.moveStraight(-master.left_trigger);
                     }
                 }
             }
@@ -51,9 +52,20 @@ public class DemoTeleOp extends CustomLOpMode {
         public synchronized void run() {
             while (opModeIsActive()) {
                 if (!isTriggerPressed) {
-                    robot.R.setPower((gamepad1.right_bumper ? gamepad1.right_stick_y : -gamepad1.right_stick_y) * SPEED_MULTIPLIER);
-                    robot.BR.setPower((gamepad1.right_bumper ? gamepad1.right_stick_y : -gamepad1.right_stick_y) * SPEED_MULTIPLIER);
+                    robot.R.setPower((master.right_bumper ? master.right_stick_y : -master.right_stick_y) * SPEED_MULTIPLIER);
+                    robot.BR.setPower((master.right_bumper ? master.right_stick_y : -master.right_stick_y) * SPEED_MULTIPLIER);
                 }
+            }
+        }
+    };
+
+    private Runnable masterController = new Runnable() {
+        @Override
+        public void run() {
+            if (gamepad2.left_bumper || gamepad1.atRest()) {
+                master = gamepad2;
+            } else {
+                master = gamepad1;
             }
         }
     };
@@ -78,7 +90,7 @@ public class DemoTeleOp extends CustomLOpMode {
 
     private Thread teleOpL = new Thread(driveL);
     private Thread teleOpR = new Thread(driveR);
-    private Thread teleOpBM = new Thread(new FunStuff());
+    private Thread masterOp = new Thread(masterController);
     private Thread triggered = new Thread(new TriggerStraight());
 
     @Override
@@ -86,11 +98,13 @@ public class DemoTeleOp extends CustomLOpMode {
     public void runOpMode() throws Throwable {
         robot.initializeRobot(hardwareMap);
         waitForStart();
+
         backupNoise.start();
         teleOpL.start();
         teleOpR.start();
-        teleOpBM.start();
+        masterOp.start();
         triggered.start();
+
         while (opModeIsActive()) {
             // resetEncoders();
             telemetry.addData("Color Sensor (Left)", Integer.toHexString(robot.colorSensorL.argb()));
@@ -111,7 +125,7 @@ public class DemoTeleOp extends CustomLOpMode {
         backupNoise = null;
         teleOpL = null;
         teleOpR = null;
-        teleOpBM = null;
+        masterOp = null;
         triggered = null;
     }
 
@@ -119,36 +133,15 @@ public class DemoTeleOp extends CustomLOpMode {
         @Override
         public void run() {
             while (opModeIsActive()) {
-                if (gamepad1.left_trigger != 0 && gamepad1.right_trigger == 0) {
+                if (master.left_trigger != 0 && master.right_trigger == 0) {
                     lTriggerPressed = true;
                     rTriggerPressed = false;
-                } else if (gamepad1.left_trigger == 0 && gamepad1.right_trigger != 0) {
+                } else if (master.left_trigger == 0 && master.right_trigger != 0) {
                     rTriggerPressed = true;
                     lTriggerPressed = false;
                 } else {
                     lTriggerPressed = rTriggerPressed = false;
                 }
-            }
-        }
-    }
-
-    /**
-     * This has all the bells and whistles- sound effects are controlled from here.
-     */
-    private class FunStuff implements Runnable {
-        @Override
-        public void run() {
-            while (opModeIsActive()) {
-                if (gamepad1.a) {
-                    toneGen.startTone(ToneGenerator.TONE_SUP_ERROR);
-                }
-                if (gamepad2.b) {
-                    toneGen.startTone(ToneGenerator.TONE_SUP_RADIO_ACK, 1000);
-                }
-                if (gamepad2.a) {
-                    SoundPlayer.playSound(hardwareMap.appContext, R.raw.siren);
-                }
-                Thread.yield();
             }
         }
     }
